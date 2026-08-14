@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>看山带你看老梗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;800;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink: #1A1A1A;
+  --muted: #5F6B7A;
+  --faint: #93A1B3;
+  --zhihu: #0066FF;
+  --zhihu-deep: #0457D8;
+  --zhihu-soft: #EBF3FF;
+  --card: #FFFFFF;
+  --card-line: #E4EAF2;
+  --accent: #E8685A;
+  --link: #0066FF;
+  --bubble-inner: #EBF3FF;
+  --bubble-ink: #0066FF;
+  --ring: #C4DAFF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Noto Sans SC",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:radial-gradient(1100px 560px at 85% -10%, rgba(255,255,255,.20) 0%, transparent 60%),
+             radial-gradient(900px 520px at 0% 105%, rgba(255,255,255,.10) 0%, transparent 55%),
+             linear-gradient(165deg, #3D8BFF 0%, var(--zhihu) 46%, var(--zhihu-deep) 100%);
+  background-attachment:fixed;
+  color:var(--ink);
+  min-height:100vh;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ---------- panel & hero ---------- */
+.panel{
+  position:relative;z-index:2;
+  max-width:920px;margin:52px auto 60px;
+  background:var(--card);border-radius:18px;
+  box-shadow:0 36px 90px -24px rgba(0,38,110,.55);
+  padding:8px 0 46px;
+}
+.hero{
+  position:relative;
+  max-width:980px;
+  margin:0 auto;
+  padding:56px 24px 20px;
+  text-align:center;
+}
+.hero-avatar{
+  width:92px;height:92px;border-radius:50%;object-fit:contain;
+  padding:8px;background:#fff;
+  border:3px solid #fff;
+  box-shadow:0 0 0 4px var(--zhihu-soft), 0 14px 34px -12px rgba(0,60,160,.4);
+  margin-bottom:20px;
+}
+.kicker{
+  font-family:"Noto Serif SC",serif;
+  letter-spacing:.5em;
+  font-size:13px;
+  color:var(--faint);
+  margin-bottom:26px;
+}
+h1{
+  font-family:"Noto Serif SC",serif;
+  font-weight:900;
+  font-size:clamp(40px,8vw,74px);
+  line-height:1.16;
+  letter-spacing:.02em;
+}
+h1 .accent{color:var(--accent)}
+.sub{
+  margin-top:22px;
+  color:var(--muted);
+  font-size:15px;
+  max-width:620px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.sub b{color:var(--ink);font-weight:500}
+.meta{
+  margin-top:16px;
+  color:var(--faint);
+  font-size:12px;
+  font-family:"Noto Serif SC",serif;
+  letter-spacing:.08em;
+}
+.meta span{margin:0 8px}
+
+/* ---------- reveal ---------- */
+.reveal-desc{
+  max-width:760px;
+  margin:26px auto 8px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  letter-spacing:.04em;
+}
+.stars{color:var(--faint);font-size:12px;text-align:center;margin-bottom:20px;letter-spacing:.35em}
+
+/* ---------- toolbar ---------- */
+.toolbar{display:flex;justify-content:center;align-items:center;gap:14px;margin:34px auto 4px}
+#history-btn, #fortune-btn{
+  height:40px;padding:0 18px;border-radius:100px;
+  border:1px solid var(--ring);
+  background:var(--zhihu-soft);
+  color:var(--zhihu);font-size:13px;letter-spacing:.12em;font-weight:500;
+  font-family:"Noto Sans SC",sans-serif;
+  cursor:pointer;display:flex;align-items:center;gap:8px;
+  transition:background .3s,color .3s,border-color .3s,transform .2s;
+}
+#history-btn:hover, #fortune-btn:hover{background:#DBEAFF;transform:translateY(-2px)}
+#history-btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+#history-count{
+  min-width:20px;height:20px;padding:0 6px;border-radius:100px;
+  background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+
+/* ---------- history drawer ---------- */
+#history-backdrop{
+  position:fixed;inset:0;background:rgba(8,32,86,.38);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .35s ease;z-index:40;
+}
+body.history-open #history-backdrop{opacity:1;pointer-events:auto}
+#history-panel{
+  position:fixed;top:0;right:0;height:100dvh;width:min(380px,90vw);
+  background:var(--card);
+  border-left:1px solid var(--card-line);
+  box-shadow:-30px 0 80px -30px rgba(0,38,110,.45);
+  z-index:50;transform:translateX(102%);
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+  display:flex;flex-direction:column;
+}
+body.history-open #history-panel{transform:none}
+.hp-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:26px 24px 14px;
+}
+.hp-title{
+  font-family:"Noto Serif SC",serif;font-weight:900;font-size:20px;
+  letter-spacing:.14em;color:var(--ink);
+}
+.hp-actions{display:flex;gap:8px;align-items:center}
+#history-clear{
+  background:none;border:1px solid var(--card-line);color:var(--faint);
+  font-size:12px;padding:4px 12px;border-radius:100px;cursor:pointer;
+  font-family:"Noto Sans SC",sans-serif;letter-spacing:.08em;
+  transition:color .3s,border-color .3s;
+}
+#history-clear:hover{color:var(--accent);border-color:var(--accent)}
+#history-close{
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--card-line);background:none;color:var(--muted);
+  font-size:18px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .3s,border-color .3s,transform .3s;
+}
+#history-close:hover{color:var(--ink);border-color:#B7C6DA;transform:rotate(90deg)}
+.hp-tabs{
+  display:flex;gap:8px;padding:0 24px 12px;
+}
+.hp-tab{
+  flex:1;background:none;border:1px solid var(--card-line);border-radius:100px;
+  padding:7px 0;font-size:12px;letter-spacing:.1em;color:var(--muted);cursor:pointer;
+  font-family:"Noto Sans SC",sans-serif;transition:all .25s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.hp-tab.active{background:var(--zhihu-soft);border-color:var(--ring);color:var(--zhihu);font-weight:600}
+.hp-tab span{
+  min-width:18px;height:18px;padding:0 5px;border-radius:100px;
+  background:var(--card-line);color:var(--muted);font-size:10px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.hp-tab.active span{background:var(--zhihu);color:#fff}
+.hp-sub{
+  padding:0 24px 16px;color:var(--faint);font-size:12px;letter-spacing:.1em;
+  font-family:"Noto Serif SC",serif;
+  border-bottom:1px dashed var(--card-line);
+}
+#history-list{
+  list-style:none;flex:1;overflow-y:auto;padding:10px 16px 30px;
+  scrollbar-width:thin;scrollbar-color:var(--faint) transparent;
+}
+.hp-item{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 14px;margin:6px 0;border-radius:10px;cursor:pointer;
+  border:1px solid transparent;
+  transition:background .25s,border-color .25s,transform .25s;
+  animation:hpIn .4s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes hpIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.hp-item:hover{
+  background:var(--zhihu-soft);border-color:var(--ring);transform:translateX(-4px);
+}
+.hp-phrase{
+  font-family:"Noto Serif SC",serif;font-weight:600;font-size:14px;
+  color:var(--ink);line-height:1.5;word-break:break-all;
+}
+.hp-phrase::before{content:"·";color:var(--zhihu);font-weight:900;margin-right:8px}
+.hp-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:0 0 auto}
+.hp-meta em{
+  font-style:normal;font-size:10px;letter-spacing:.14em;color:var(--zhihu);
+  border:1px solid var(--ring);background:var(--zhihu-soft);border-radius:100px;padding:1px 8px;
+}
+.hp-meta time{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
+.hp-empty{
+  display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  color:var(--faint);font-size:13px;line-height:2.2;
+  font-family:"Noto Serif SC",serif;letter-spacing:.12em;
+}
+.hp-empty img{width:84px;margin-bottom:16px}
+#refresh{
+  width:54px;height:54px;border-radius:50%;
+  border:1px solid var(--ring);
+  background:var(--zhihu-soft);
+  color:var(--zhihu);font-size:26px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:transform .45s cubic-bezier(.16,1,.3,1), background .3s;
+}
+#refresh:hover{background:#DBEAFF;transform:rotate(180deg)}
+#refresh:active{transform:rotate(180deg) scale(.92)}
+#refresh.spinning{transform:rotate(360deg)}
+#refresh:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* ---------- bubbles ---------- */
+#bubble-field{
+  display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:16px;
+  max-width:860px;margin:0 auto;padding:18px 24px 30px;
+  position:relative;
+}
+.bubble{
+  border-radius:14px;
+  background:var(--zhihu-soft);
+  color:var(--bubble-ink);
+  border:1px solid var(--ring);
+  cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;
+  font-family:"Noto Serif SC",serif;font-weight:800;
+  font-size:15px;line-height:1.45;letter-spacing:.02em;
+  padding:16px 22px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  flex:0 0 auto;max-width:250px;
+  box-shadow:0 8px 18px -10px rgba(0,80,220,.4);
+  position:relative;z-index:2;
+  animation:rise 1.4s cubic-bezier(.16,1,.3,1) both;
+  transition:transform .18s ease, background .25s, box-shadow .25s;
+}
+.bubble:hover{transform:translateY(-4px);background:#DBEAFF;box-shadow:0 14px 28px -12px rgba(0,80,220,.5)}
+.bubble:active{transform:scale(.95)}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.9)}to{opacity:1;transform:none}}
+.bubble.fading{opacity:0;transition:opacity .4s ease}
+.bubble:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* burst shards */
+.shard{
+  position:absolute;width:12px;height:12px;border-radius:3px;
+  background:var(--ring);pointer-events:none;
+  z-index:4;
+}
+@keyframes fly{
+  to{opacity:0;transform:translate(var(--dx), var(--dy)) rotate(220deg) scale(.3)}
+}
+@keyframes popFade{to{opacity:0;transform:scale(.2)}}
+
+/* ---------- detail stage ---------- */
+#stage{display:none;position:relative;z-index:20;max-width:760px;margin:0 auto;padding:48px 20px 80px}
+body.detail-open #stage{display:block}
+body.detail-open .panel,
+body.detail-open footer{display:none !important}
+#stage{animation:stageIn .45s cubic-bezier(.16,1,.3,1) both}
+@keyframes stageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+#field-empty{
+  display:none;text-align:center;color:var(--faint);
+  font-family:"Noto Serif SC",serif;font-size:13px;letter-spacing:.12em;
+  padding:56px 20px 30px;line-height:2;
+}
+#field-empty img{width:76px;display:block;margin:0 auto 14px}
+body.empty #field-empty{display:block}
+.back-row{display:flex;justify-content:flex-end;margin-bottom:10px}
+#back{
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.5);color:#fff;
+  font-size:13px;padding:6px 16px;border-radius:100px;cursor:pointer;font-family:"Noto Sans SC",sans-serif;
+  letter-spacing:.08em;transition:background .3s;
+}
+#back:hover{background:rgba(255,255,255,.28)}
+#back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.card{
+  background:var(--card);color:#2B3442;border-radius:14px;
+  padding:44px 46px 40px;
+  box-shadow:0 36px 90px -24px rgba(0,38,110,.55);
+  position:relative;
+  font-family:"Noto Serif SC",serif;
+  animation:cardIn .5s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.97)}to{opacity:1;transform:none}}
+.card-btn{
+  position:absolute;top:18px;width:38px;height:38px;border-radius:50%;
+  border:1px solid var(--ring);background:#fff;color:var(--faint);font-size:17px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:transform .2s,color .2s,border-color .2s,background .2s;z-index:3;
+}
+.fav-btn{right:20px}
+.share-btn{right:66px}
+.card-btn:hover{transform:scale(1.12);color:var(--accent);border-color:var(--accent)}
+.fav-btn.on{color:#fff;background:var(--accent);border-color:var(--accent)}
+.fav-btn.pop{animation:favPop .35s ease}
+@keyframes favPop{40%{transform:scale(1.35)}}
+.card .h-row{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.card h2{font-weight:900;font-size:32px;color:var(--ink);line-height:1.2}
+.card .h-row .tag{
+  font-size:11px;font-weight:600;letter-spacing:.18em;color:var(--zhihu);
+  border:1px solid var(--ring);background:var(--zhihu-soft);border-radius:100px;padding:3px 12px;font-family:"Noto Sans SC",sans-serif;
+}
+.card .role{font-size:12px;color:var(--faint);letter-spacing:.12em;margin-top:6px}
+.card p.card-desc{margin:14px 0 8px;font-size:15px;color:#3A4657;line-height:1.85}
+.card blockquote{
+  border-left:3px solid var(--zhihu);
+  background:var(--zhihu-soft);
+  border-radius:0 10px 10px 0;
+  padding:14px 18px;margin:16px 0;
+  font-size:14px;color:#33507A;white-space:pre-line;line-height:1.9;
+  font-family:"Noto Sans SC",sans-serif;
+}
+.card .divider{text-align:center;color:#C9D8F2;margin:20px 0;font-size:13px;letter-spacing:.3em}
+.card .deriv-title{font-size:12px;letter-spacing:.22em;color:var(--zhihu);margin:8px 0 12px;font-family:"Noto Sans SC",sans-serif;font-weight:600}
+.card p.card-sec{
+  margin:0 0 6px;font-size:14px;color:#3A4657;line-height:1.9;
+  font-family:"Noto Sans SC",sans-serif;text-align:justify;
+}
+.card ul.derivs a.deriv-link{
+  color:var(--zhihu);text-decoration:none;
+  border-bottom:1px dashed var(--ring);padding-bottom:1px;
+  transition:background .2s,border-color .2s;
+}
+.card ul.derivs a.deriv-link:hover{background:var(--zhihu-soft);border-bottom:1px solid var(--zhihu)}
+.card ul.derivs a.deriv-link::after{content:"↗";font-size:10px;margin-left:4px;color:var(--faint);vertical-align:super}
+.card ul.derivs a.deriv-link.inner{
+  font-weight:700;border-bottom:1px solid var(--zhihu);
+}
+.card ul.derivs a.deriv-link.inner::after{content:"→";color:var(--zhihu)}
+.card ul.derivs{list-style:none;font-family:"Noto Sans SC",sans-serif;font-size:14px}
+.card ul.derivs li{
+  padding:10px 2px 10px 26px;position:relative;color:#3A4657;border-bottom:1px dashed var(--card-line);line-height:1.6;
+}
+.card ul.derivs li:last-child{border-bottom:none}
+.card ul.derivs li::before{content:"·";position:absolute;left:8px;color:var(--zhihu);font-weight:700}
+.card ul.derivs li small{color:var(--faint);display:block;font-size:12px;margin-top:2px;font-family:"Noto Sans SC",sans-serif}
+.card .links{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.card a.src{
+  font-family:"Noto Sans SC",sans-serif;font-size:13px;color:var(--zhihu);text-decoration:none;
+  border:1px solid var(--ring);border-radius:100px;padding:6px 16px;display:inline-block;
+  transition:background .25s;
+}
+.card a.src:hover{background:var(--zhihu-soft)}
+
+/* ---------- zhida live ---------- */
+.live-badge{
+  display:inline-flex;align-items:center;gap:5px;margin-left:10px;
+  font-size:9px;letter-spacing:.16em;color:var(--accent);font-weight:700;
+  vertical-align:2px;
+}
+.live-badge i{
+  width:6px;height:6px;border-radius:50%;background:var(--accent);
+  animation:pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.zhida-box{
+  background:linear-gradient(135deg,#F7FAFF 0%, var(--zhihu-soft) 100%);
+  border:1px solid var(--ring);border-radius:10px;
+  padding:16px 18px;font-size:13.5px;line-height:1.9;color:#33507A;
+  font-family:"Noto Sans SC",sans-serif;min-height:56px;
+  word-break:break-word;
+}
+.zhida-box b{color:var(--zhihu-deep)}
+.zhida-box .zhida-loading{
+  display:inline-flex;align-items:center;gap:9px;color:var(--faint);
+}
+.zhida-box .zhida-loading::after{
+  content:"";width:14px;height:14px;border-radius:50%;
+  border:2px solid var(--ring);border-top-color:var(--zhihu);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.zhida-box .zhida-err{color:var(--faint);font-size:13px;margin-bottom:8px}
+.zhida-box .retry{
+  border:1px solid var(--ring);background:#fff;color:var(--zhihu);
+  font-size:12px;padding:5px 16px;border-radius:100px;cursor:pointer;
+  font-family:"Noto Sans SC",sans-serif;letter-spacing:.08em;
+}
+.zhida-box .retry:hover{background:var(--zhihu-soft)}
+.card .above{text-align:right;font-size:12px;color:var(--faint);font-family:"Noto Sans SC",sans-serif;margin-top:22px;letter-spacing:.05em}
+.card .above b{font-weight:600;color:var(--zhihu)}
+
+/* ---------- modals (fortune / share) ---------- */
+.modal-mask{
+  position:fixed;inset:0;background:rgba(8,32,86,.5);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;z-index:60;padding:20px;
+}
+body.fortune-open #fortune-mask, body.share-open #share-mask{display:flex}
+.fortune-card{
+  position:relative;width:min(380px,92vw);background:#fff;border-radius:18px;
+  padding:34px 30px 26px;text-align:center;
+  border-top:6px solid var(--accent);
+  box-shadow:0 40px 100px -20px rgba(0,30,90,.5);
+  animation:stageIn .4s cubic-bezier(.16,1,.3,1) both;
+}
+.f-mascot{width:62px;margin-bottom:8px}
+.f-label{font-size:11px;letter-spacing:.5em;color:var(--faint);font-family:"Noto Serif SC",serif;margin-bottom:14px}
+.f-phrase{font-family:"Noto Serif SC",serif;font-weight:900;font-size:24px;color:var(--ink);line-height:1.45;margin-bottom:12px}
+.f-tag{display:inline-block;font-size:10px;letter-spacing:.16em;color:var(--zhihu);border:1px solid var(--ring);background:var(--zhihu-soft);border-radius:100px;padding:2px 12px}
+.f-divider{color:#D8CBE0;margin:16px 0 10px;font-size:12px;letter-spacing:.3em}
+.f-text{font-size:14px;color:#8A5A44;line-height:2;font-family:"Noto Serif SC",serif;min-height:34px}
+.f-text b{color:var(--accent);font-weight:700}
+.f-actions{display:flex;gap:10px;justify-content:center;margin-top:22px}
+.f-actions button, .f-actions a.f-btn{
+  border:1px solid var(--ring);background:#fff;color:var(--zhihu);
+  font-size:12.5px;padding:8px 18px;border-radius:100px;cursor:pointer;
+  font-family:"Noto Sans SC",sans-serif;letter-spacing:.08em;text-decoration:none;
+  transition:background .25s,color .25s;display:inline-block;
+}
+.f-actions button:hover, .f-actions a.f-btn:hover{background:var(--zhihu-soft)}
+#f-open{background:var(--zhihu);color:#fff;border-color:var(--zhihu)}
+#f-open:hover{background:var(--zhihu-deep)}
+.modal-x{
+  position:absolute;top:12px;right:14px;width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--card-line);background:none;color:var(--muted);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .3s,color .3s;
+}
+.modal-x:hover{color:var(--ink);transform:rotate(90deg)}
+.share-box{text-align:center;animation:stageIn .4s cubic-bezier(.16,1,.3,1) both}
+.share-box img{
+  width:min(340px,84vw);border-radius:14px;display:block;
+  box-shadow:0 40px 100px -20px rgba(0,30,90,.6);
+}
+.share-box .f-actions{margin-top:18px}
+.share-hint{margin-top:10px;color:rgba(255,255,255,.75);font-size:11px;letter-spacing:.1em}
+
+/* ---------- footer ---------- */
+footer{
+  text-align:center;padding:8px 20px 130px;color:rgba(255,255,255,.82);font-size:12px;
+  font-family:"Noto Serif SC",serif;letter-spacing:.14em;position:relative;z-index:2;
+}
+
+/* ---------- kanshan mascots ---------- */
+.mascot{
+  position:fixed;bottom:-14px;width:150px;z-index:1;
+  pointer-events:none;user-select:none;
+  filter:drop-shadow(0 10px 26px rgba(0,30,90,.35));
+  animation:bob 5s ease-in-out infinite;
+}
+.mascot-left{left:max(16px, calc(50% - 640px))}
+.mascot-right{right:max(16px, calc(50% - 640px));transform:scaleX(-1);animation-delay:2.5s}
+@keyframes bob{0%,100%{margin-bottom:0}50%{margin-bottom:10px}}
+
+/* ---------- focus ---------- */
+.bubble:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card .close:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- mobile ---------- */
+@media (max-width:1100px){
+  .mascot{display:none}
+}
+@media (max-width:600px){
+  .panel{margin:24px 12px 40px;border-radius:14px}
+  .hero{padding-top:42px}
+  .bubble{font-size:13px;padding:13px 16px;max-width:200px}
+  .card{padding:30px 22px;margin-bottom:60px}
+  .card h2{font-size:25px}
+  #bubble-field{padding:14px 16px 24px;gap:12px}
+  #stage{padding:30px 14px 60px}
+  footer{padding-bottom:40px}
+}
+</style>
+</head>
+<body>
+
+<main class="panel">
+<header class="hero">
+  <img class="hero-avatar" src="assets/kanshan-scarf.png" alt="刘看山头像">
+  <div class="kicker">看山带你看老梗</div>
+  <h1>知·乎·老·梗·录</h1>
+  <p class="sub">
+    深夜里飘着一串字。<br>
+    每一个，都是<b>知乎人自己的暗号</b>——点开，看看它是从哪儿来、又怎么被玩坏的。
+  </p>
+  <div class="meta"><span>——</span>刘看山 主编<span>——</span></div>
+</header>
+
+<div class="toolbar">
+  <button id="history-btn" type="button" aria-label="查看浏览历史" title="浏览历史">历史 <span id="history-count">0</span></button>
+  <button id="refresh" type="button" aria-label="刷新一批老梗" title="刷新一批">↻</button>
+  <button id="fortune-btn" type="button" aria-label="抽一支今日梗签" title="今日梗签">抽签</button>
+</div>
+
+<div class="reveal-desc">轻点一个气泡，它便应声而破</div>
+<div class="stars">✳ ✳ ✳</div>
+
+<div id="bubble-field" role="list" aria-label="知乎老梗列表"></div>
+<div id="field-empty"><img src="assets/kanshan-scarf.png" alt="">这一批的老梗都戳破啦<br>点上面的 ↻ ，再换一批</div>
+</main>
+
+<img class="mascot mascot-left" src="assets/kanshan-cutout.png" alt="">
+<img class="mascot mascot-right" src="assets/kanshan-cutout.png" alt="">
+
+<div id="stage" role="dialog" aria-live="polite" aria-label="老梗详情">
+  <div class="back-row"><button id="back" type="button">← 返回</button></div>
+  <div class="card">
+    <button id="c-share" class="card-btn share-btn" type="button" aria-label="生成分享卡片" title="生成分享卡片">⤴</button>
+    <button id="c-fav" class="card-btn fav-btn" type="button" aria-label="收藏这个梗" title="收藏">☆</button>
+    <div class="h-row">
+      <h2 id="c-title">谢邀，人在美国，刚下飞机</h2>
+      <span class="tag" id="c-tag">句式</span>
+    </div>
+    <div class="role" id="c-role"></div>
+    <p class="card-desc" id="c-desc"></p>
+    <blockquote id="c-quote"></blockquote>
+    <div class="sec-block" id="c-origin-block">
+      <div class="deriv-title">来龙去脉</div>
+      <p class="card-sec" id="c-origin"></p>
+    </div>
+    <div class="sec-block" id="c-scene-block">
+      <div class="deriv-title">使用场景</div>
+      <p class="card-sec" id="c-scene"></p>
+    </div>
+    <div class="sec-block" id="c-zhida-block">
+      <div class="deriv-title">知乎直答 · 实时解读<span class="live-badge"><i></i>LIVE</span></div>
+      <div class="zhida-box" id="c-zhida"></div>
+    </div>
+    <div class="divider">— · — · — · —</div>
+    <div class="deriv-title">衍生与变体</div>
+    <ul class="derivs" id="c-derivs"></ul>
+    <div class="links" id="c-links"></div>
+    <div class="above"><b id="c-above"></b> · 以上。</div>
+    <div class="above" style="margin-top:6px">—— 看山带你看老梗 ——</div>
+  </div>
+</div>
+
+<div id="history-backdrop"></div>
+<aside id="history-panel" role="dialog" aria-label="浏览历史">
+  <div class="hp-head">
+    <div class="hp-title">老梗档案袋</div>
+    <div class="hp-actions">
+      <button id="history-clear" type="button">清空</button>
+      <button id="history-close" type="button" aria-label="关闭历史">×</button>
+    </div>
+  </div>
+  <div class="hp-tabs">
+    <button class="hp-tab active" data-tab="history" type="button">浏览历史 <span id="tab-history-count">0</span></button>
+    <button class="hp-tab" data-tab="favs" type="button">我的收藏 <span id="tab-fav-count">0</span></button>
+  </div>
+  <div class="hp-sub" id="hp-sub">你戳破过的气泡，都记在这里</div>
+  <ul id="history-list"></ul>
+  <div class="hp-empty" id="history-empty"><img src="assets/kanshan-scarf.png" alt=""><span id="hp-empty-text">还没有历史记录<br>回首页，戳几个气泡吧</span></div>
+</aside>
+
+<div id="fortune-mask" class="modal-mask">
+  <div class="fortune-card">
+    <button id="f-close" class="modal-x" type="button" aria-label="关闭">×</button>
+    <img class="f-mascot" src="assets/kanshan-scarf.png" alt="">
+    <div class="f-label">今 日 梗 签</div>
+    <div class="f-phrase" id="f-phrase"></div>
+    <div class="f-tag" id="f-tag"></div>
+    <div class="f-divider">— · — · —</div>
+    <div class="f-text" id="f-text"></div>
+    <div class="f-actions">
+      <button id="f-again" type="button">再抽一签</button>
+      <button id="f-open" type="button">看看这个梗</button>
+    </div>
+  </div>
+</div>
+
+<div id="share-mask" class="modal-mask">
+  <div class="share-box">
+    <img id="share-img" alt="分享卡片">
+    <div class="f-actions">
+      <a id="share-dl" class="f-btn" download="看山老梗.png">保存图片</a>
+      <button id="share-close" type="button">关闭</button>
+    </div>
+    <div class="share-hint">长按图片也可以直接保存</div>
+  </div>
+</div>
+
+<footer>
+  看山带你看老梗 · 把知乎的暗号，讲给你听 · 以上。
+</footer>
+
+<script>
+const MEMES = [
+  {
+    phrase:"谢邀，人在美国，刚下飞机",
+    tag:"句式",
+    role:"知乎十大梗 · 装逼体开山之作",
+    desc:"知乎史上第一个用“谢邀”的用户叫 flypig——2011年1月27日，知乎上线第二天，他在回答开头写下“谢邀”，从此“答题前先谢邀”成了站内心照不宣的规矩。再后来，这句“谢邀，人在美国，刚下飞机”突然出圈，把“精英感”四个字演成了一出喜剧：答主们纷纷“刚下飞机”，仿佛机长随时在为答题紧急迫降。",
+    quote:"谢邀。\n人在美国，刚下飞机。\n家父是一名黑道大哥，在美国攻读博士后，目前就职华尔街某金融机构，日收入10万美金。",
+    derivs:[
+      {t:"谢邀，人在蒙古，刚下航母",n:"最高频的变体，把装逼推向军事化。"},
+      {t:"谢邀，人在法院，刚下法庭",n:"上海高院官方账号在回答开头这么写，官方下场玩梗。"},
+      {t:"谢邀，人在太空，刚下飞船",n:"航天员王亚平来知乎互动时的开场白。"},
+      {t:"泻药",n:"“谢邀”的谐音体，自嘲式弱化。"},
+      {t:"谢邀，人在飞机，肛下美国",n:"错别字流变体，越错越上头。"}
+    ],
+    links:[
+      {label:"「人在美国,刚下飞机」是什么梗？",url:"https://www.zhihu.com/question/322230063"},
+      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"},
+      {label:"谢邀，人在知乎，刚好十年",url:"https://zhuanlan.zhihu.com/p/344747722"}
+    ],
+    above:"flypig · 2011"
+  },
+  {
+    phrase:"先说谢邀再吹逼，人在美国刚下机",
+    tag:"打油诗",
+    role:"谢邀体全家桶 · 知乎人都会背的吐槽诗",
+    desc:"知乎人把自己平台的答题套路，写成了顺口溜——把“谢邀—吹嘘—分割线—多图预警—实名反对—匿了”的整条装逼流水线，一字不落地吐槽了个遍。高赞回复过千，评论区还跟着续写：“如此答案无人赞，知乎迟早要玩完。”",
+    quote:"先说谢邀再吹逼，人在美国刚下机。\n博士在读刚下课，勉强有空答此题。\n年薪百万算个屁，月入千万有点低。\n资料引用好几千，参考文献几十篇。\n后面加条分割线，换个话题接着编。\n多图预警发照骗，来源网络侵权删。\n实名反对高票答，怒刷一波存在感。\n圈内人多赶紧匿，以上装逼已完毕。",
+    derivs:[
+      {t:"实名反对楼上所有回答",n:"装逼流水线必备环节。"},
+      {t:"一觉醒来这么多赞，谢谢大家",n:"装逼体默认的「醒来体」。"},
+      {t:"评论区好多人在酸，信不信由你",n:"被揭穿后的标准防御话术。"}
+    ],
+    links:[
+      {label:"谢邀,人在美国,刚下飞机到底是什么梗？(原诗)",url:"https://www.zhihu.com/question/383683349/answer/1132303871"}
+    ],
+    above:"长歌 · 2020"
+  },
+  {
+    phrase:"分享你刚编的故事",
+    tag:"讽刺体",
+    role:"知乎slogan的叛逆变体",
+    desc:"知乎的官方slogan是“与世界分享你的知识、经验和见解”。可当“故事会”的味道越来越浓，网友们便把这句话拧了个个儿——“与世界分享你刚编的故事”，专用来戳穿那些一眼假的小作文。这句反讽之传神，官方自己都默认了它的存在。",
+    quote:"知乎官方：与世界分享你的知识、经验和见解。\n知乎网友：与世界分享你刚编的故事。",
+    derivs:[
+      {t:"先问是不是，再问为什么",n:"知乎十大梗之一，反驳第一原则。"},
+      {t:"逼乎 / 编乎",n:"对“知乎=故事会”的民间诨号。"}
+    ],
+    links:[
+      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
+    ],
+    above:"网友 · 2010s"
+  },
+  {
+    phrase:"吃一勺太阳会怎样",
+    tag:"脑洞",
+    role:"知乎宇宙 · 硬核科普提问体",
+    desc:"知乎独有一种提问流派：拿一个离谱得没边的假设，去问正经到极点的问题。“吃一勺太阳”“吃掉一小勺电子”“一勺中子星”“一勺真空”——每一个都能钓出大把硬核科普高赞回答。问题越离谱，回答越认真，成了知乎特有的“一本正经的荒诞”。",
+    quote:"问题：吃一小勺电子会怎样？\n高赞：你体内的分子原子都会带着电荷互相排斥，理论上整个人会瞬间“爆炸”开——但概率上讲，你根本活不到感受那一刻。",
+    derivs:[
+      {t:"一勺系列全家桶",n:"电子 / 中子星 / 太阳 / 真空，一勺走天下。"},
+      {t:"按一下按钮得100万变矮1厘米",n:"同样是脑洞提问体的名场面。"}
+    ],
+    links:[
+      {label:"李诞：知乎还有哪些类似的梗？",url:"https://www.zhihu.com/question/578481630"}
+    ],
+    above:"知乎宇宙 · 2016"
+  },
+  {
+    phrase:"追杀你的蜗牛",
+    tag:"假设题",
+    role:"知乎宇宙 · 永生追杀令",
+    desc:"知乎著名的脑洞题：如果有一只蜗牛，永远不会死，永远知道你位置，向你爬来，碰到你就死——你怎么办？引出了一整代知乎人的答案：把它锁进银行保险柜、送进火箭、雇人隔空搬运……严肃地讨论一个荒谬到极点的假设，正是知乎宇宙的浪漫。",
+    quote:"假设：一只蜗牛每天凌晨向你爬来，永远不会死，永远知道你在哪，碰到你就死。\n问题：你会怎么办？",
+    derivs:[
+      {t:"给诸葛亮一万个奥尼尔",n:"同一个脑洞宇宙里的兄弟题。"},
+      {t:"三小时以后的丧尸",n:"丧尸向的知乎原生脑洞。"}
+    ],
+    links:[
+      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
+    ],
+    above:"知乎宇宙 · 2015"
+  },
+  {
+    phrase:"实名反对楼上所有回答",
+    tag:"句式",
+    role:"知乎十大梗 · 存在感刷取术",
+    desc:"你以为你反对的是“楼上”吗？不，你反对的是整个评论区。“实名反对楼上所有回答”是一种姿态：先立flag，再输出观点，哪怕观点和楼上其实差不多。它是装逼流水线里最昂扬的一环，也是答主们怒刷存在感的保留节目。",
+    quote:"“实名反对楼上所有回答。”\n——然后，这位答主自己的回答，获得了全场最高赞。",
+    derivs:[
+      {t:"先问是不是，再问为什么",n:"反驳流派的起手式。"},
+      {t:"本人利益相关，匿了",n:"刷完存在感之后的优雅退场。"}
+    ],
+    links:[
+      {label:"知乎十大梗盘点",url:"https://zhuanlan.zhihu.com/p/337313963"}
+    ],
+    above:"知乎 · 2010s"
+  },
+  {
+    phrase:"细思极恐",
+    tag:"词语",
+    role:"知乎十大梗 · 细品之后头皮发麻",
+    desc:"“细思极恐”四个字，是知乎人给“想多了”起的学名。一个看似平平无奇的现象，经知乎er一分析，往往引向令人脊背发凉的联想——于是这四个字成了所有“细思恐极”故事的盖章。它可以是一个形容词，也可以是一种生活方式。",
+    quote:"“表面看是个暖心故事，细思极恐。”\n——知乎高赞常用句式。",
+    derivs:[
+      {t:"懂的都懂，不懂的说了你也不明白",n:"细思极恐的亲戚，加密通话式回复。"},
+      {t:"有一说一",n:"知乎式“说实话”的前缀。"}
+    ],
+    links:[
+      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
+    ],
+    above:"知乎 · 2013"
+  },
+  {
+    phrase:"知乎宇宙",
+    tag:"话题",
+    role:"知乎原生梗 · 官宣出圈",
+    desc:"2019年12月，知乎用户创建了“知乎宇宙”话题——把所有“吃一勺”“追杀你的蜗牛”“给诸葛亮一万个奥尼尔”之类的脑洞题，收进同一个宇宙。到十周年盘点时，这个话题已收录761个问题，成了知乎亲手认证的“原生梗”。",
+    quote:"知乎十年盘点：“知乎宇宙”话题已包含761个问题，拥有全网热度与知名度，是网友们喜闻乐见的知乎原生梗。",
+    derivs:[
+      {t:"镜像问题",n:"“楼上的问题换个角度再来一次”的知乎特产。"},
+      {t:"如何评价",n:"“如何评价XXX”提问体，知乎出圈句式。"}
+    ],
+    links:[
+      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"}
+    ],
+    above:"知乎宇宙 · 2019"
+  },
+  {
+    phrase:"轮带逛",
+    tag:"大V梗",
+    role:"早期知乎 · 一个人的推荐算法",
+    desc:"在知乎还没有那么懂推荐算法的年代，“轮子哥”的点赞和关注，约等于今天的时间线推荐——被他“带”到的问题，流量立刻起飞。于是“轮带逛”成了早期知乎的一种玄学：谁被轮子哥点了赞，谁就踏进了流量快车道。",
+    quote:"老知乎人才懂的梗：轮带逛、王纳米的收藏夹、魏则西事件、程浩、二十四帧事件……",
+    derivs:[
+      {t:"早期知乎大V宇宙",n:"谢熊猫君、马伯庸、采铜、葛巾、朱炫大师兄、magasa……"},
+      {t:"王纳米的收藏夹",n:"早期知乎传奇收藏夹之一。"}
+    ],
+    links:[
+      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
+    ],
+    above:"知乎 · 2012"
+  },
+  {
+    phrase:"刘看山，知乎的北极狐",
+    tag:"吉祥物",
+    role:"官方萌物 · 但总被网友玩坏",
+    desc:"刘看山是知乎的吉祥物——一只来自北极的狐狸，在企鹅的邻居里住着，本职是看山。初代设计其实是一只龇牙咧嘴的哈士奇，因“太凶”被用户抗议，才改成了今天呆萌的北极狐。它频繁出现在知乎的脑洞题里，被网友一次又一次地“玩坏”。",
+    quote:"知乎冷知识：初代刘看山是只龇着牙的哈士奇，在用户抗议“太凶”后，才改成了现在呆萌的北极狐形象。",
+    derivs:[
+      {t:"刘看山的脑洞宇宙",n:"经常在知乎脑洞题里客串主角。"},
+      {t:"看山带你看老梗",n:"本栏目，由刘看山亲自主编。"}
+    ],
+    links:[
+      {label:"关于知乎的冷知识有哪些？",url:"https://www.zhihu.com/question/1889253249913160284"}
+    ],
+    above:"知乎 · 2013"
+  },
+  {
+    phrase:"如何评价",
+    tag:"句式",
+    role:"知乎十大梗 · 出圈提问体",
+    desc:"“如何评价XXX”——这是知乎提问的标准起手式，也是火出圈的第一句式。从“如何评价《三体》”到“如何评价XX明星”，全站成千上万的问题都以这五个字开头。它甚至渗透进了现实：新闻报道里，“如何评价”成了网友围观一切大事的固定台词。",
+    quote:"“如何评价”体之魂：\n先问是不是，再问为什么，\n最后补一句：以上。",
+    derivs:[
+      {t:"XXX是什么体验",n:"与“如何评价”并称知乎两大提问公式。"},
+      {t:"有哪些XXX？",n:"知乎收藏癖提问体，一本万利。"}
+    ],
+    links:[
+      {label:"知乎十大梗盘点",url:"https://zhuanlan.zhihu.com/p/337313963"}
+    ],
+    above:"知乎 · 2010s"
+  },
+  {
+    phrase:"镜像问题",
+    tag:"句式",
+    role:"知乎十大梗 · 反手一枪",
+    desc:"知乎特有的功能催生的梗：同一个话题，反过来问一遍，就叫“镜像问题”。当有人提问“男朋友太粘人怎么办”，镜像就是“女朋友太粘人怎么办”。它既是反问的利器，也是知乎人表达“凭什么只问我这一边”的优雅方式。",
+    quote:"问题：如何看待A？\n镜像问题：如何看待非A？\n——你品，你细品。",
+    derivs:[
+      {t:"先问是不是，再问为什么",n:"反驳流的另一把枪。"},
+      {t:"这个问题我已经在镜像问过了",n:"知乎式“你问晚了”的回应。"}
+    ],
+    links:[
+      {label:"知乎十大梗盘点",url:"https://zhuanlan.zhihu.com/p/337313963"}
+    ],
+    above:"知乎 · 2011"
+  },
+  {
+    phrase:"图书馆30秒",
+    tag:"名场面",
+    role:"知乎故事 · 全网爆款",
+    desc:"知乎“故事区”的封神之作：一个女生讲述自己发现男友精神出轨的经过，用“图书馆30秒”这个细节，把亲密关系里最微妙的信任崩塌写得入木三分。这篇回答火遍全网，被无数人转发——“图书馆30秒”四个字，从此成了“心寒瞬间”的代名词。",
+    quote:"知乎高赞故事“图书馆30秒”，让无数人看完沉默。\n细节，往往比结局更致命。",
+    derivs:[
+      {t:"一觉醒来，赞同破万",n:"知乎爆款故事的标配开场白。"},
+      {t:"与世界分享你刚编的故事",n:"真故事和编故事，在这一刻难以分辨。"}
+    ],
+    links:[
+      {label:"最近几年有哪些知乎社区的原生梗？",url:"https://www.zhihu.com/question/605267605"}
+    ],
+    above:"知乎 · 2021"
+  },
+  {
+    phrase:"一觉醒来",
+    tag:"口头禅",
+    role:"知乎爆款 · 标准开场白",
+    desc:"“一觉醒来，竟然这么多人赞”——这是知乎回答的经典开场白。答主睡觉，赞数暴涨，醒来受宠若惊。配合“第一次回答没想到这个待遇”“评论区好多人在酸”使用，风味更佳。它既是一种惊喜，也是一种知乎式的低调炫耀。",
+    quote:"一觉醒来，竟然这么多人赞。\n第一次回答没想到这个待遇，谢谢大家！",
+    derivs:[
+      {t:"泻药，人在美国，刚下飞机",n:"同一个装逼宇宙里的邻居。"},
+      {t:"评论区好多人在酸",n:"醒来之后的防御姿态。"}
+    ],
+    links:[
+      {label:"「人在美国,刚下飞机」是什么梗？",url:"https://www.zhihu.com/question/322230063"}
+    ],
+    above:"知乎 · 2010s"
+  },
+  {
+    phrase:"懂的都懂",
+    tag:"口头禅",
+    role:"知乎黑话 · 加密通话",
+    desc:"“懂的都懂，不懂的说了你也不明白。”——这是知乎人用来堵住所有追问的神句。它既是一种傲慢，也是一种保护：有些事情，点到为止；有些圈子，只进不出。配合“利益相关，匿了”使用，堪称加密通话之王。",
+    quote:"懂的都懂，不懂的说了你也不明白。\n利益相关，匿了。",
+    derivs:[
+      {t:"利益相关",n:"知乎声明利益关系的万能前缀。"},
+      {t:"匿了",n:"说完就跑，不给评论留机会。"}
+    ],
+    links:[
+      {label:"「人在美国,刚下飞机」到底是什么梗？",url:"https://www.zhihu.com/question/383683349"}
+    ],
+    above:"知乎 · 2015"
+  },
+  {
+    phrase:"吃一小勺电子会怎样",
+    tag:"脑洞",
+    role:"知乎宇宙 · 一勺系列",
+    desc:"“吃一小勺电子”“吃一小勺太阳”“一勺中子星”——知乎最著名的脑洞提问系列。每一个“一勺”，都能钓出核物理、天体物理、材料科学的大佬们一本正经地计算。荒诞的提问配上严谨的回答，是知乎宇宙最迷人的风景。",
+    quote:"问题：吃一小勺电子会怎样？\n回答：你整个人会带着电荷瞬间“爆炸”——当然，你活不到那一刻。",
+    derivs:[
+      {t:"一勺太阳",n:"同一个系列里的另一个爆款。"},
+      {t:"一勺中子星",n:"重量级选手，密度顶到天花板。"}
+    ],
+    links:[
+      {label:"李诞：知乎还有哪些类似的梗？",url:"https://www.zhihu.com/question/578481630"}
+    ],
+    above:"知乎宇宙 · 2016"
+  },
+  {
+    phrase:"给诸葛亮一万个奥尼尔",
+    tag:"假设题",
+    role:"知乎宇宙 · 穿越战争模拟",
+    desc:"知乎脑洞题的巅峰：如果给诸葛亮一万个奥尼尔，能北伐成功吗？这个问题的精妙之处在于，它把历史、体育、物理、军事策略搅在一起，让各路答主从“奥尼尔能不能越过蜀道”聊到“古代军队如何给奥尼尔供饭”。一本正经地荒谬，就是知乎宇宙的意义。",
+    quote:"假设：给诸葛亮一万个奥尼尔，北伐能成吗？\n结论：取决于奥尼尔能不能在蜀道里生存。",
+    derivs:[
+      {t:"追杀你的蜗牛",n:"同一个脑洞宇宙的兄弟题。"},
+      {t:"三小时以后的丧尸",n:"丧尸向的知乎原生脑洞。"}
+    ],
+    links:[
+      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
+    ],
+    above:"知乎宇宙 · 2017"
+  },
+  {
+    phrase:"王纳米的收藏夹",
+    tag:"大V梗",
+    role:"早期知乎 · 收藏夹传说",
+    desc:"在收藏功能还很新潮的年代，知乎有个账号叫“王纳米”，它的收藏夹成了一个传奇——里面搜罗了全站最精的干货、最神的回答、最好玩的脑洞。早期知乎er把它当成“必逛榜单”，点开一个收藏夹，就像打开了一整年的知乎精选。",
+    quote:"老知乎人才懂的梗：\n轮带逛、王纳米的收藏夹、魏则西事件、程浩……",
+    derivs:[
+      {t:"轮带逛",n:"同一个大V时代的产物。"},
+      {t:"早期知乎大V宇宙",n:"谢熊猫君、马伯庸、采铜……"}
+    ],
+    links:[
+      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
+    ],
+    above:"知乎 · 2012"
+  },
+  {
+    phrase:"小透明",
+    tag:"自嘲",
+    role:"知乎十大梗 · 受宠若惊",
+    desc:"“小透明”是知乎人对自己的自嘲：在站内不活跃、赞数寥寥、存在感约等于零。可一旦“一觉醒来赞同破万”，小透明立刻受宠若惊——这是知乎最经典的“平凡人惊喜”叙事，也是无数新人答主的起点。",
+    quote:"一觉醒来，赞同破万，小透明受宠若惊。",
+    derivs:[
+      {t:"一觉醒来",n:"小透明的标配剧情。"},
+      {t:"以上。",n:"说完就撤，保持低调。"}
+    ],
+    links:[
+      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
+    ],
+    above:"知乎 · 2010s"
+  },
+  {
+    phrase:"先问是不是，再问为什么",
+    tag:"句式",
+    role:"知乎十大梗 · 反驳第一原则",
+    desc:"知乎讨论区的“宪法第一条”：任何“为什么”之前，先问“是不是”。面对预设了错误前提的提问，知乎人用它一键拆台。它代表了早期知乎对“先核实、再讨论”的执拗，也是知乎官方十周年盖章的十大梗之一。",
+    quote:"问：为什么程序员都爱穿格子衫？\n高赞：先问是不是，再问为什么。",
+    derivs:[
+      {t:"如何评价",n:"与它并称知乎两大出圈句式。"},
+      {t:"镜像问题",n:"反驳流的另一件武器。"},
+      {t:"抛开事实不谈",n:"它的反义词，抬杠起手式。"}
+    ],
+    links:[
+      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"}
+    ],
+    above:"知乎 · 2011"
+  },
+  {
+    phrase:"以上。",
+    tag:"口头禅",
+    role:"知乎十大梗 · 收尾的仪式感",
+    desc:"一个句号都不多给的收尾词。“以上”本是公文与电报用语，被知乎答主拿来给长篇大论画句号——言尽于此，恕不奉陪。它入选知乎官方十大梗，也是辨认老知乎的身份证。",
+    quote:"……（洋洋洒洒三千字）\n以上。",
+    derivs:[
+      {t:"谢邀",n:"开头谢邀、结尾以上，流程闭环。"},
+      {t:"利益相关，匿了",n:"说完就跑的另一种收尾。"}
+    ],
+    links:[
+      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"}
+    ],
+    above:"知乎 · 2011"
+  },
+  {
+    phrase:"利益相关，匿了",
+    tag:"口头禅",
+    role:"免责声明 · 加密通话收尾",
+    desc:"当回答涉及行业内幕、公司评价或争议话题，答主会先声明“利益相关”以示中立，然后点开匿名——既表明了立场，又保护了马甲。后来它被广泛用于一切“我说了，但你别问我是谁”的场合。",
+    quote:"利益相关：行业从业者。\n匿了。",
+    derivs:[
+      {t:"懂的都懂",n:"加密通话两件套的另一半。"},
+      {t:"评论区好多人在酸",n:"匿名之后的常见防御。"}
+    ],
+    links:[
+      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
+    ],
+    above:"知乎 · 2012"
+  },
+  {
+    phrase:"多图预警，来源网络，侵权删",
+    tag:"句式",
+    role:"搬运工的自我修养",
+    desc:"贴图回答的标准三件套：“多图预警”提醒流量党，“来源网络”声明非原创，“侵权删”预留退路。原本是礼貌提醒，后来因为表情包合集、影视截图回答泛滥，成了“我是搬运工”的官方认证。",
+    quote:"多图预警！！！\n（五十张表情包）\n来源网络，侵权删。",
+    derivs:[
+      {t:"流量党慎入",n:"预警体的亲戚。"},
+      {t:"先马后看",n:"看到长文长图的配套动作。"}
+    ],
+    links:[
+      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
+    ],
+    above:"知乎 · 2013"
+  },
+  {
+    phrase:"抖机灵",
+    tag:"词语",
+    role:"段子手的生存之道",
+    desc:"在严肃问题下面讲个俏皮段子，不求信息量但求好笑——这就是“抖机灵”。知乎早期对它又爱又恨：爱它盘活气氛，恨它挤占干货。如今“抖机灵”已自我转正，成为一种被默许的回答流派。",
+    quote:"问：如何优雅地回应催婚？\n抖机灵版：已阅，下一个。",
+    derivs:[
+      {t:"干货",n:"抖机灵官方反义词。"},
+      {t:"认真你就输了",n:"机灵党的护身符。"}
+    ],
+    links:[
+      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
+    ],
+    above:"知乎 · 2012"
+  },
+  {
+    phrase:"挖坑不填 · 占坑",
+    tag:"行为",
+    role:"预告党的鸽学修养",
+    desc:"“占坑”是先留一句“回头细说”抢占答题位；“挖坑不填”是承诺了更新却再无下文。两者合称知乎鸽学双璧——评论区里催更的“楼主还在吗”，往往是比正文更热闹的风景。",
+    quote:"先占个坑，周末详细写。\n——该回答最后编辑于 9 年前",
+    derivs:[
+      {t:"太监了",n:"挖坑不填的更直白说法。"},
+      {t:"催更",n:"评论区固定节目。"}
+    ],
+    links:[
+      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
+    ],
+    above:"知乎 · 2012"
+  },
+  {
+    phrase:"王路飞，一人分饰244角",
+    tag:"事件",
+    role:"知乎故事会 · 传奇反面教材",
+    desc:"知乎用户“王路飞”在站内一人分饰244个角色：时而是宇航员，时而是医生，时而是海外华侨——每个身份都写得有鼻子有眼。被平台核实封号后，他成了“分享你刚编的故事”最著名的人形注脚。",
+    quote:"他的回答横跨几十个行业，\n每一段人生都栩栩如生，\n只是都发生在同一个人身上。",
+    derivs:[
+      {t:"与世界分享你刚编的故事",n:"王路飞是这句话最好的注解。"},
+      {t:"知乎故事会",n:"因这类事件得名。"}
+    ],
+    links:[
+      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
+    ],
+    above:"知乎 · 2017"
+  },
+  {
+    phrase:"贵乎药丸",
+    tag:"自嘲",
+    role:"爱之深 · 黑之切",
+    desc:"“贵乎”是调侃式敬称，“药丸”谐音“要完”。每当广告变多、内容下沉、审核抽风，评论区就会整齐刷起“贵乎药丸”。它是知乎用户表达不满的固定句式，也是爱得深沉的证明——真不关心的人，连黑都懒得黑。",
+    quote:"看到首页全是软广的那天，\n我默默打出四个字：贵乎药丸。",
+    derivs:[
+      {t:"编乎 / 逼乎",n:"同款民间诨号。"},
+      {t:"与世界分享你刚编的故事",n:"药丸的主要病因。"}
+    ],
+    links:[
+      {label:"最近几年有哪些知乎社区的原生梗？",url:"https://www.zhihu.com/question/605267605"}
+    ],
+    above:"知乎 · 2016"
+  },
+  {
+    phrase:"强答一波 · 不请自来",
+    tag:"口头禅",
+    role:"没受邀也要聊两句",
+    desc:"知乎本是邀请制答题文化，没被邀请的人想说话，只好先自我解嘲一句“不请自来，强答一波”。如今邀请机制早已淡化，这句话退化成纯粹的开场客套，约等于“我就随便说说，你们随便听听”。",
+    quote:"不请自来，强答一波。\n说得不对的地方，评论区轻喷。",
+    derivs:[
+      {t:"谢邀",n:"受邀者的开场，正好相反。"},
+      {t:"泻药",n:"谐音版开场白。"}
+    ],
+    links:[
+      {label:"「人在美国,刚下飞机」是什么梗？",url:"https://www.zhihu.com/question/322230063"}
+    ],
+    above:"知乎 · 2013"
+  },
+  {
+    phrase:"年薪百万是什么体验",
+    tag:"提问体",
+    role:"体验流 · 凡尔赛重灾区",
+    desc:"“XX 是什么体验”本是知乎最有想象力的提问体，让普通人得以窥见另一种人生。但“年薪百万”“考上清华”“住着别墅”类问题下的浮夸回答实在太多，让这个句式成了“知乎人均百万”刻板印象的源头之一。",
+    quote:"问：年薪百万是什么体验？\n答：谢邀，人在美国，刚下飞机。",
+    derivs:[
+      {t:"如何评价",n:"两大提问公式之一。"},
+      {t:"谢邀体",n:"体验问题下的标配回答。"}
+    ],
+    links:[
+      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"}
+    ],
+    above:"知乎 · 2012"
+  }
+];
+
+/* 增强资料：来龙去脉(o) / 使用场景(s) / 衍生链接(du，与 derivs 顺序对应) */
+const ZS = q => 'https://www.zhihu.com/search?type=content&q=' + encodeURIComponent(q);
+const EXTRA = {
+  "谢邀，人在美国，刚下飞机":{
+    o:"2011年1月知乎刚内测，用户 flypig 在回答开头写下“谢邀”二字，很快被全站模仿成答题礼仪。2014年前后，“人在美国，刚下飞机”作为夸张版自我介绍走红，把早期知乎的“精英社区”气质推到极致，也埋下了被全民调侃的种子。",
+    s:"如今用来调侃一切“开口就是凡尔赛”的发言；官方账号、名人亲自下场玩梗时，它也是首选开场白。",
+    du:[ZS("谢邀 人在蒙古 刚下航母"),ZS("谢邀 人在法院 刚下法庭"),ZS("王亚平 知乎 谢邀"),ZS("泻药 梗"),ZS("谢邀 错别字 变体")]
+  },
+  "先说谢邀再吹逼，人在美国刚下机":{
+    o:"这首打油诗最早出现在“谢邀体”相关问题的评论区，作者不详，却一字不差地总结了知乎高赞回答的八股结构。因为过于传神，被无数答主引用续写，堪称知乎版《答题规范（误）》。",
+    s:"每当一个回答集齐谢邀、分割线、多图预警、实名反对，评论区就会有人贴出这首诗“总结全文”。",
+    du:[ZS("实名反对楼上所有回答"),ZS("一觉醒来这么多赞"),ZS("评论区好多人在酸")]
+  },
+  "分享你刚编的故事":{
+    o:"知乎2013年启用 slogan“与世界分享你的知识、经验和见解”。随着情感故事、职场传奇类回答越来越多，网友把 slogan 改出一个字不差的变体——“分享你刚编的故事”，专门送给细节过于完美的回答。",
+    s:"看到离谱小作文时的标准回复，进可拆台、退可调侃，是全站通用的“防伪标签”。",
+    du:[ZS("先问是不是 再问为什么"),ZS("逼乎 编乎")]
+  },
+  "吃一勺太阳会怎样":{
+    o:"“一勺”系列起源于“吃一小勺电子会怎样”等提问：答主们用核物理、热力学认真推演一个荒诞假设，问题的离谱与回答的严谨形成强烈反差，成就了知乎独特的“严肃脑洞”流派。",
+    s:"“一勺 XX”如今是脑洞提问的通用模板——想钓出硬核大佬，就用这个句式。",
+    du:[ZS("一勺系列 知乎"),ZS("按一下按钮 100万 矮1厘米")]
+  },
+  "追杀你的蜗牛":{
+    o:"这道题的完整版本是“给你10亿美元，但会有一只蜗牛永远追杀你”。从把蜗牛锁进银行保险柜到送上火箭，答主们的方案越来越离谱、论证却越来越严肃，后来被做成视频、漫画，火出圈外。",
+    s:"如今用来比喻任何“甩不掉的慢性威胁”，比如“deadline 就是那只蜗牛”。",
+    du:[ZS("给诸葛亮一万个奥尼尔"),ZS("三小时以后的丧尸 知乎")]
+  },
+  "实名反对楼上所有回答":{
+    o:"知乎的“反对”按钮本是内容评价工具，但“实名反对”四个字把它变成了一种登场仪式：先表明态度再开讲。由于太多人反对完说的和楼上差不多，这句话逐渐沦为刷存在感的暗号。",
+    s:"现在多用于玩梗式开场；真想反对的时候，大家反而不好意思这么写了。",
+    du:[ZS("先问是不是 再问为什么"),ZS("利益相关 匿了")]
+  },
+  "细思极恐":{
+    o:"“细思极恐”在2013年前后的知乎故事、推理类回答里高频出现，用来标记“越想越不对劲”的瞬间。随后它扩散到全网，成为中文互联网描述“后知后觉的恐惧”的标准用词。",
+    s:"适用于一切表面正常、越想越瘆人的场景，也常被反用来自嘲“是我想多了”。",
+    du:[ZS("懂的都懂"),ZS("有一说一")]
+  },
+  "知乎宇宙":{
+    o:"2019年12月，有用户创建“知乎宇宙”话题，把站内各类脑洞假设题统一收录。到知乎十周年官方盘点时，话题已收录761个问题，“知乎宇宙”正式被盖章为原生梗。",
+    s:"看到离谱假设题时留言“已收录进知乎宇宙”，是对提问者的最高礼遇。",
+    du:[ZS("镜像问题"),ZS("如何评价 提问体")]
+  },
+  "轮带逛":{
+    o:"早期知乎推荐算法不完善，大V“轮子哥”活跃度高、点赞范围广，被他点赞的回答常常流量暴涨。“被轮子哥翻牌子”成了早期答主的共同记忆，“轮带逛”三字浓缩了一个时代。",
+    s:"老用户怀旧专用词，新用户听到它，约等于听到接头暗号。",
+    du:[ZS("早期知乎 大V"),ZS("王纳米的收藏夹")]
+  },
+  "刘看山，知乎的北极狐":{
+    o:"刘看山2014年正式成为知乎吉祥物，设定是一只生活在北极的狐狸。鲜为人知的是，初代形象其实是一只龇牙的哈士奇，因为“太凶”遭用户抗议，才改成如今的呆萌造型——这段黑历史反而成了它最出名的梗。",
+    s:"知乎官方整活时的固定主角，也是网友脑洞题里的万能客串演员。",
+    du:[ZS("刘看山 脑洞"),ZS("看山带你看老梗")]
+  },
+  "如何评价":{
+    o:"“如何评价”是知乎提问的标准句式之一：简洁、开放、适合各路答主发挥。随着知乎内容被全网搬运，这四个字也出圈成为围观一切大事的通用开场白，连新闻报道都常借用。",
+    s:"现实里朋友让你点评点什么，回一句“如何评价”，内味立刻就有了。",
+    du:[ZS("XXX是什么体验"),ZS("有哪些XXX 提问")]
+  },
+  "镜像问题":{
+    o:"知乎的“镜像问题”功能本用于关联同一事件的不同视角提问，但很快被玩成了“你问 A 我就问非 A”的反击武器。镜像链有时能套娃七八层，堪称知乎特色行为艺术。",
+    s:"看到立场明显的提问，甩出一个镜像问题链接，是最优雅的反驳方式。",
+    du:[ZS("先问是不是 再问为什么"),ZS("镜像问题 套娃")]
+  },
+  "图书馆30秒":{
+    o:"2021年，一篇讲述发现男友“精神出轨”细节的回答火遍全网，其中“图书馆30秒”的片段把亲密关系里信任的崩塌写得极其细腻。该回答被无数次转载，也让“知乎故事”的国民度再上一个台阶。",
+    s:"如今“图书馆30秒”是“细节击溃感情”的代名词，也泛指一切后知后觉的心寒瞬间。",
+    du:[ZS("一觉醒来 赞同破万"),ZS("与世界分享你刚编的故事")]
+  },
+  "一觉醒来":{
+    o:"“一觉醒来这么多赞”是知乎爆款回答的经典返场台词：答主睡前随手一答，醒来发现赞同破万，受宠若惊之余补一句谢谢大家。因为出现频率过高，它逐渐从真情流露变成了固定节目。",
+    s:"现在看到有人认真说“一觉醒来”，评论区会默契地接一句“谢邀”。",
+    du:[ZS("泻药 人在美国 刚下飞机"),ZS("评论区好多人在酸")]
+  },
+  "懂的都懂":{
+    o:"这句话流行于知乎上一些不便明说的回答：行业潜规则、圈内秘闻，答主一句“懂的都懂”，既保住了神秘感又规避了麻烦。它后来出圈，成为全网“加密通话”的代名词。",
+    s:"不想解释、不能解释、懒得解释时的三合一解决方案。",
+    du:[ZS("利益相关"),ZS("匿了 梗")]
+  },
+  "吃一小勺电子会怎样":{
+    o:"这是“一勺系列”的开山之作之一：高赞回答从电荷量、库仑斥力一路算到人体承受极限，结论是你会以极其壮观的方式不复存在。硬核程度让它成为“知乎式认真”的代表作。",
+    s:"想见识知乎大佬的推演能力，搜“一勺”两个字就够了。",
+    du:[ZS("一勺太阳"),ZS("一勺中子星")]
+  },
+  "给诸葛亮一万个奥尼尔":{
+    o:"这道题离谱与严谨并存：答主们认真计算奥尼尔的饭量、蜀道的承载力、北伐的补给线，把体育、历史和军事搅成一锅。它是“知乎宇宙”里讨论度最高的假设题之一。",
+    s:"适用于一切“给 XX 配上 YY 能不能成事”的脑洞讨论。",
+    du:[ZS("追杀你的蜗牛"),ZS("三小时以后的丧尸 知乎")]
+  },
+  "王纳米的收藏夹":{
+    o:"在收藏夹还是知乎核心功能的年代，“王纳米”的收藏夹以精、全、神著称，被老用户当成站内寻宝图。一个收藏夹的关注数超过很多大V，是早期知乎“内容为王”的缩影。",
+    s:"如今提起它，基本等于宣告“我是老知乎”。",
+    du:[ZS("轮带逛"),ZS("早期知乎 大V")]
+  },
+  "小透明":{
+    o:"“小透明”是知乎用户自嘲没有存在感的说法：答题没人看、评论没人回。可一旦某篇回答意外爆红，“小透明受宠若惊”就成了标准剧情，这个词也因此带上了一层温柔的色彩。",
+    s:"适用于任何“我本来只是随便说说”的场合，自嘲中带着一点期待。",
+    du:[ZS("一觉醒来这么多赞"),ZS("以上 知乎 结尾")]
+  }
+};
+
+/* 丰富版资料（覆盖/补充 EXTRA）：内容经知乎直答考证 */
+Object.assign(EXTRA, {
+  "谢邀，人在美国，刚下飞机":{
+    o:"2011年1月27日，知乎上线第二天，用户 flypig 在回答开头写下“谢邀”二字，本是客气，却被全站模仿成答题礼仪。2014年前后，“人在美国，刚下飞机”作为夸张版自我介绍走红，把早期知乎的精英气质推到极致。再往后，它彻底出圈，连上海高院、航天员王亚平都亲自下场玩梗，完成了从“装逼体”到“全民接头暗号”的蜕变。",
+    s:"如今用来调侃一切“开口就是凡尔赛”的发言；也常见于官方账号自我解构、名人做客知乎时的破冰开场。看到有人一本正经地“刚下飞机”，评论区会默契地刷起“泻药”。",
+    du:[ZS("谢邀 人在蒙古 刚下航母"),ZS("谢邀 人在法院 刚下法庭"),ZS("王亚平 知乎 谢邀"),ZS("泻药 梗"),ZS("谢邀 错别字 变体")]
+  },
+  "先说谢邀再吹逼，人在美国刚下机":{
+    o:"这首打油诗最早出现在“谢邀体”相关问题的评论区，作者不详，却一字不差地总结了知乎高赞回答的八股结构：谢邀、吹嘘、分割线、多图预警、实名反对、匿名收尾。因为过于传神，被无数答主引用续写，评论区里还诞生了“如此答案无人赞，知乎迟早要玩完”等续篇，堪称知乎版《答题规范（误）》。",
+    s:"每当一个回答集齐谢邀、分割线、多图预警、实名反对等要素，评论区就会有人贴出这首诗“总结全文”。它也是新人快速理解“知乎体”的最佳入门读物。",
+    du:[ZS("实名反对楼上所有回答"),ZS("一觉醒来这么多赞"),ZS("评论区好多人在酸")]
+  },
+  "分享你刚编的故事":{
+    o:"知乎2013年启用 slogan“与世界分享你的知识、经验和见解”。随着情感故事、职场传奇类回答越来越多，网友把 slogan 改出一个字不差的变体——“与世界分享你刚编的故事”，专门送给细节过于完美的回答。这句反讽之传神，官方自己都默认了它的存在，王路飞一人分饰244角事件更是让它彻底封神。",
+    s:"看到离谱小作文时的标准回复，进可拆台、退可调侃，是全站通用的“防伪标签”。如今它早已出圈，成为全网质疑“故事会文学”的通用语。",
+    du:[ZS("先问是不是 再问为什么"),ZS("逼乎 编乎")]
+  },
+  "吃一勺太阳会怎样":{
+    o:"“一勺”系列起源于“吃一小勺电子会怎样”等提问：答主们用核物理、热力学认真推演一个荒诞假设，问题的离谱与回答的严谨形成强烈反差。此后“一勺中子星”“一勺真空”“一勺太阳”接踵而至，成就了知乎独特的“严肃脑洞”流派，也是“知乎宇宙”话题里最重要的星系。",
+    s:"“一勺 XX”如今是脑洞提问的通用模板——想钓出硬核大佬，就用这个句式。它也常被用来形容知乎“一本正经地荒谬”的独特社区气质。",
+    du:[ZS("一勺系列 知乎"),ZS("按一下按钮 100万 矮1厘米")]
+  },
+  "追杀你的蜗牛":{
+    o:"这道题的完整版本是“给你10亿美元，但会有一只蜗牛永远追杀你，你干不干？”。从把蜗牛锁进银行保险柜、雇人隔空搬运，到送上火箭发射进太空，答主们的方案越来越离谱、论证却越来越严肃。这道题后来被做成视频、漫画火到站外，成为“知乎宇宙”的基石级脑洞。",
+    s:"如今用来比喻任何“甩不掉的慢性威胁”，比如“deadline 就是那只蜗牛”。在讨论“无限资源与极小概率致命风险”的取舍时，它也是最常被引用的思想实验。",
+    du:[ZS("给诸葛亮一万个奥尼尔"),ZS("三小时以后的丧尸 知乎")]
+  },
+  "实名反对楼上所有回答":{
+    o:"知乎的“反对”按钮本是内容评价工具，但“实名反对”四个字把它变成了一种登场仪式：先表明态度再开讲，气势拉满。由于太多人反对完，说的和楼上其实差不多，这句话逐渐沦为刷存在感的暗号，入选知乎官方十大梗。它也是打油诗里“实名反对高票答，怒刷一波存在感”的出处。",
+    s:"现在多用于玩梗式开场；真想反对的时候，大家反而不好意思这么写了。在站外，“实名反对”也成了表达强烈不认同的通用句式。",
+    du:[ZS("先问是不是 再问为什么"),ZS("利益相关 匿了")]
+  },
+  "细思极恐":{
+    o:"“细思极恐”在2013年前后的知乎故事、推理类回答里高频出现，用来标记“越想越不对劲”的瞬间：一个看似平常的细节，经答主层层分析，往往引向脊背发凉的结论。随后它扩散到全网，成为中文互联网描述“后知后觉的恐惧”的标准用词，入选知乎官方十大梗。",
+    s:"适用于一切表面正常、越想越瘆人的场景，也常被反用来自嘲“是我想多了”。如今它在弹幕、评论区里的使用频率，早已远超知乎站内。",
+    du:[ZS("懂的都懂"),ZS("有一说一")]
+  },
+  "知乎宇宙":{
+    o:"2019年12月，有用户创建“知乎宇宙”话题，把站内各类脑洞假设题统一收录：吃一勺系列、追杀你的蜗牛、给诸葛亮一万个奥尼尔……到知乎十周年官方盘点时，话题已收录761个问题，“知乎宇宙”正式被盖章为原生梗。它是少有的由用户发起、被官方追认的社区文化符号。",
+    s:"看到离谱假设题时留言“已收录进知乎宇宙”，是对提问者的最高礼遇。想系统围观知乎式脑洞，直接逛这个话题就够了。",
+    du:[ZS("镜像问题"),ZS("如何评价 提问体")]
+  },
+  "轮带逛":{
+    o:"早期知乎推荐算法不完善，大V“轮子哥”活跃度高、点赞范围广，被他点赞的回答常常流量暴涨，约等于被人工推荐。“被轮子哥翻牌子”成了早期答主的共同记忆，“轮带逛”三字浓缩了一个算法缺位、大V当道的时代。它与“王纳米的收藏夹”并称早期知乎两大流量玄学。",
+    s:"老用户怀旧专用词，新用户听到它，约等于听到接头暗号。如今用它，多半是在感慨“那个靠人而不是靠算法发现好内容的年代”。",
+    du:[ZS("早期知乎 大V"),ZS("王纳米的收藏夹")]
+  },
+  "刘看山，知乎的北极狐":{
+    o:"刘看山2014年正式成为知乎吉祥物，设定是一只生活在北极的狐狸，在企鹅的邻居里住着，本职是看山。鲜为人知的是，初代形象其实是一只龇牙的哈士奇，因为“太凶”遭用户抗议，才改成如今的呆萌造型。这段黑历史反而成了它最出名的梗，也让它成为知乎官方整活时的固定主角。",
+    s:"知乎官方活动、节日彩蛋里的固定班底，也是网友脑洞题里的万能客串演员。看到白色北极狐形象玩梗，十有八九是在致敬看山。",
+    du:[ZS("刘看山 脑洞"),ZS("看山带你看老梗")]
+  },
+  "如何评价":{
+    o:"“如何评价”是知乎提问的标准句式之一：简洁、开放、适合各路答主发挥，从“如何评价《三体》”到“如何评价某明星”，全站成千上万的问题以这五个字开头。随着知乎内容被全网搬运，它出圈成为围观一切大事的通用开场白，连新闻报道的评论区都满是“如何评价”。",
+    s:"现实里朋友让你点评点什么，回一句“如何评价”，内味立刻就有了。它也是判断一个人知乎浓度的快速试剂。",
+    du:[ZS("XXX是什么体验"),ZS("有哪些XXX 提问")]
+  },
+  "镜像问题":{
+    o:"知乎的“镜像问题”功能本用于关联同一事件的不同视角提问，但很快被玩成了“你问 A 我就问非 A”的反击武器：有人问“男朋友太粘人怎么办”，镜像就是“女朋友太粘人怎么办”。镜像链有时能套娃七八层，堪称知乎特色行为艺术，入选官方十大梗。",
+    s:"看到立场明显的提问，甩出一个镜像问题链接，是最优雅的反驳方式。它也提醒我们：大多数争论，换个性别、换个立场，热度往往会翻倍。",
+    du:[ZS("先问是不是 再问为什么"),ZS("镜像问题 套娃")]
+  },
+  "图书馆30秒":{
+    o:"2021年，一篇讲述发现男友“精神出轨”细节的回答火遍全网：跨年夜，男友在图书馆与女同学独处30秒未告知她。答主用极其细腻的笔触写下信任崩塌的全过程，让无数读者沉默。该回答被无数次转载，“图书馆30秒”从此成为“细节击溃感情”的代名词，也是知乎故事区国民度最高的一篇。",
+    s:"如今用来泛指一切后知后觉的心寒瞬间。讨论“伴侣边界感”“精神出轨算不算出轨”时，它是出场率最高的案例。",
+    du:[ZS("一觉醒来 赞同破万"),ZS("与世界分享你刚编的故事")]
+  },
+  "一觉醒来":{
+    o:"“一觉醒来这么多赞”是知乎爆款回答的经典返场台词：答主睡前随手一答，醒来发现赞同破万，受宠若惊之余补一句“谢谢大家”。因为出现频率过高，它逐渐从真情流露变成了固定节目，还衍生出“第一次回答没想到这个待遇”等配套话术，被打油诗一并收录吐槽。",
+    s:"现在看到有人认真说“一觉醒来”，评论区会默契地接一句“谢邀”。它也成了站外形容“内容突然爆了”的通用表达。",
+    du:[ZS("泻药 人在美国 刚下飞机"),ZS("评论区好多人在酸")]
+  },
+  "懂的都懂":{
+    o:"这句话流行于知乎上一些不便明说的回答：行业潜规则、圈内秘闻，答主一句“懂的都懂，不懂的说了你也不明白”，既保住了神秘感又规避了麻烦。它精准拿捏了“想说又不能说”的暧昧感，后来出圈成为全网“加密通话”的代名词，常见于一切欲言又止的场合。",
+    s:"不想解释、不能解释、懒得解释时的三合一解决方案。配合“利益相关，匿了”使用，加密效果翻倍。",
+    du:[ZS("利益相关"),ZS("匿了 梗")]
+  },
+  "吃一小勺电子会怎样":{
+    o:"这是“一勺系列”的开山之作之一：高赞回答从电荷量、库仑斥力一路算到人体承受的极限，结论是你会以极其壮观的方式不存在——当然，你活不到感受那一刻。硬核程度让它成为“知乎式认真”的代表作，也直接催生了“一勺太阳”“一勺中子星”等整个系列。",
+    s:"想见识知乎大佬的推演能力，搜“一勺”两个字就够了。它也是向圈外人解释“知乎宇宙”时最好用的入门案例。",
+    du:[ZS("一勺太阳"),ZS("一勺中子星")]
+  },
+  "给诸葛亮一万个奥尼尔":{
+    o:"这道题离谱与严谨并存：答主们认真计算奥尼尔的饭量、蜀道的承载力、北伐的补给线，从“奥尼尔能不能活着走出蜀道”聊到“古代军队如何给奥尼尔供饭”，把体育、历史和军事搅成一锅。它是“知乎宇宙”里讨论度最高的假设题之一，完美诠释了什么叫“一本正经地荒谬”。",
+    s:"适用于一切“给 XX 配上 YY 能不能成事”的脑洞讨论。想拉朋友入坑知乎宇宙，从这道题开始讲效果最好。",
+    du:[ZS("追杀你的蜗牛"),ZS("三小时以后的丧尸 知乎")]
+  },
+  "王纳米的收藏夹":{
+    o:"在收藏夹还是知乎核心功能的年代，“王纳米”的收藏夹以精、全、神著称：全站最精的干货、最神的回答、最好玩的脑洞尽收其中，被老用户当成站内寻宝图。一个收藏夹的关注数超过很多大V，是早期知乎“内容为王”的缩影，也是算法时代之前的人工推荐位。",
+    s:"如今提起它，基本等于宣告“我是老知乎”。看到质量极高的合集类内容时，老用户也会调侃“建议收录进王纳米的收藏夹”。",
+    du:[ZS("轮带逛"),ZS("早期知乎 大V")]
+  },
+  "小透明":{
+    o:"“小透明”是知乎用户自嘲没有存在感的说法：答题没人看、评论没人回、粉丝个位数。可一旦某篇回答意外爆红，“一觉醒来赞同破万，小透明受宠若惊”就成了标准剧情。这个词入选知乎官方十大梗，它记录的是无数普通答主被看见的那个瞬间。",
+    s:"适用于任何“我本来只是随便说说”的场合，自嘲中带着一点期待。站外如今也用它形容一切“存在感稀薄”的状态。",
+    du:[ZS("一觉醒来这么多赞"),ZS("以上 知乎 结尾")]
+  },
+  "先问是不是，再问为什么":{
+    o:"面对“为什么女孩数学都不好”这类预设了错误前提的提问，早期知乎人形成了一套理性讨论准则：任何“为什么”之前，先问“是不是”。它入选知乎官方十大梗，代表了知乎对“先核实、再讨论”的执拗。后来“抛开事实不谈”走红，恰是因为它踩中了这句话要拆掉的所有雷区。",
+    s:"遇到带节奏的提问时的标准拆台式回复。如今它早已出圈，成为全网反驳伪命题、假共识的通用句式。",
+    du:[ZS("如何评价"),ZS("镜像问题"),ZS("抛开事实不谈")]
+  },
+  "以上。":{
+    o:"“以上”本是公文与电报用语，被知乎答主拿来给长篇大论画句号——言尽于此，恕不奉陪，一个标点都不多给。它入选知乎官方十大梗，与开头的“谢邀”遥相呼应，构成一条完整的答题流水线。老知乎看到“以上。”两个字，会自动脑补出一种克制而骄傲的语气。",
+    s:"写完长文、发完观点时的仪式感收尾。如今在工作群、邮件里敲下“以上”，懂的人会心一笑。",
+    du:[ZS("谢邀"),ZS("利益相关 匿了")]
+  },
+  "利益相关，匿了":{
+    o:"当回答涉及行业内幕、公司评价或争议话题，答主会先声明“利益相关”以示中立，然后点开匿名——既表明了立场，又保护了马甲。这套免责声明后来成为标配，也常被用来讽刺匿名控评和软文广告。它和“懂的都懂”并称知乎加密通话两件套。",
+    s:"爆料、吐槽、聊行业内幕时的标准开场加收尾。如今也被泛用于一切“我说了但你别问我是谁”的场合。",
+    du:[ZS("懂的都懂"),ZS("评论区好多人在酸")]
+  },
+  "多图预警，来源网络，侵权删":{
+    o:"“多图预警”原是提醒流量党注意消耗，“来源网络”声明非原创，“侵权删”预留退路——贴图回答的礼貌三件套。后来因为表情包合集、影视截图回答泛滥，这三句话成了“我是搬运工”的官方认证。看到它们同时出现，基本可以放心开始收图了。",
+    s:"发图集、表情包、长截图时的标准前缀加后缀。站外搬运内容时带上这套话术，也能获得知乎式的礼貌加成。",
+    du:[ZS("流量党慎入"),ZS("先马后看 马克")]
+  },
+  "抖机灵":{
+    o:"在严肃问题下面讲个俏皮段子，不求信息量但求好笑——这就是“抖机灵”。知乎早期对它又爱又恨：爱它盘活气氛，恨它挤占干货，相关问题下甚至爆发过“该不该折叠抖机灵回答”的大讨论。如今抖机灵已自我转正，成为一种被默许的回答流派，高赞机灵有时比干货还出圈。",
+    s:"想调节气氛、抖个包袱时的自我声明。也可用来点评别人：“这回答干货没有，机灵倒是很灵。”",
+    du:[ZS("干货 知乎"),ZS("认真你就输了")]
+  },
+  "挖坑不填 · 占坑":{
+    o:"“占坑”是先留一句“回头细说”抢占答题位，“挖坑不填”是承诺了更新却再无下文，两者合称知乎鸽学双璧。无数“周末详细写”的回答，最后编辑时间永远停在了九年前。评论区里催更的“楼主还在吗”“孩子都会打酱油了”，往往是比正文更热闹的风景。",
+    s:"自嘲更新拖延时的官方用语；催更时则用“占坑不填，天打雷劈”表达愤怒。追长文答主的必备词汇。",
+    du:[ZS("太监了 网络用语"),ZS("催更 知乎")]
+  },
+  "王路飞，一人分饰244角":{
+    o:"知乎用户“王路飞”在站内一人分饰244个角色：时而是宇航员，时而是医生，时而是海外华侨，每个身份都写得有鼻子有眼，人生经历横跨几十个行业。2017年被平台核实封号后，他成了“与世界分享你刚编的故事”最著名的人形注脚，也让“知乎故事会”的称号彻底坐实。",
+    s:"如今用来调侃一切“人设过多”的创作者或答主。看到离谱经历时回一句“王路飞小号？”，懂的人自然会心一笑。",
+    du:[ZS("与世界分享你刚编的故事"),ZS("知乎故事会")]
+  },
+  "贵乎药丸":{
+    o:"“贵乎”是调侃式敬称，“药丸”谐音“要完”。每当广告变多、内容下沉、审核抽风，评论区就会整齐刷起“贵乎药丸”。它是知乎用户表达不满的固定句式，但细品又满是爱之深、黑之切——真不关心的人，连黑都懒得黑。从2016年喊到今天，知乎没完，这四个字倒先成了常青梗。",
+    s:"对平台负面事件的万能评语，也用于老用户之间互相确认身份。适用场景：看到离谱推荐、软广泛滥、神回答被折叠时。",
+    du:[ZS("编乎 逼乎"),ZS("与世界分享你刚编的故事")]
+  },
+  "强答一波 · 不请自来":{
+    o:"知乎本是邀请制答题文化，“谢邀”是受邀者的体面开场；没被邀请的人想说话，只好先自我解嘲一句“不请自来，强答一波”。如今邀请机制早已淡化，这句话退化成纯粹的开场客套，约等于“我就随便说说，你们随便听听”，与“谢邀”构成知乎开场白的一体两面。",
+    s:"主动答题时的自谦开场，潜台词是“说得不对轻喷”。站外主动插话、自荐观点时也可以用，自带谦逊滤镜。",
+    du:[ZS("谢邀"),ZS("泻药 梗")]
+  },
+  "年薪百万是什么体验":{
+    o:"“XX 是什么体验”本是知乎最有想象力的提问体，让普通人得以窥见另一种人生。但“年薪百万”“考上清华”“住着别墅”类问题下的浮夸回答实在太多，让这个句式成了“知乎人均百万”刻板印象的源头之一，也直接催生了“谢邀，人在美国，刚下飞机”这条究极合体梗。",
+    s:"如今正经用它提问的人少了，玩梗用它造句的人多了。现实中听到“是什么体验”，接一句“谢邀”即可完成对暗号。",
+    du:[ZS("如何评价"),ZS("谢邀 人在美国 刚下飞机")]
+  }
+});
+
+const field = document.getElementById('bubble-field');
+const stage = document.getElementById('stage');
+const refreshBtn = document.getElementById('refresh');
+const backBtn = document.getElementById('back');
+const body = document.body;
+
+const $ = id => document.getElementById(id);
+const POOL_SIZE = 10;
+
+let queue = [];
+let shownSet = new Set();
+
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function drawBatch(n){
+  let avail = MEMES.filter(m => !shownSet.has(m.phrase));
+  if(avail.length === 0){
+    shownSet.clear();
+    avail = MEMES.slice();
+  }
+  const batch = shuffled(avail).slice(0, n);
+  batch.forEach(m => shownSet.add(m.phrase));
+  return batch;
+}
+
+/* ---------- history ---------- */
+const HKEY = 'kanshan-history';
+let history = [];
+try{ history = JSON.parse(localStorage.getItem(HKEY)) || []; }catch(e){ history = []; }
+
+function saveHistory(){
+  try{ localStorage.setItem(HKEY, JSON.stringify(history)); }catch(e){}
+  updateHistoryCount();
+}
+function updateHistoryCount(){
+  $('history-count').textContent = history.length;
+  const t = $('tab-history-count');
+  if(t) t.textContent = history.length;
+}
+
+/* ---------- favorites ---------- */
+const FKEY = 'kanshan-favs';
+let favs = [];
+try{ favs = JSON.parse(localStorage.getItem(FKEY)) || []; }catch(e){ favs = []; }
+
+function saveFavs(){
+  try{ localStorage.setItem(FKEY, JSON.stringify(favs)); }catch(e){}
+  const t = $('tab-fav-count');
+  if(t) t.textContent = favs.length;
+}
+function isFav(m){ return favs.some(f => f.phrase === m.phrase); }
+function toggleFav(m){
+  if(isFav(m)) favs = favs.filter(f => f.phrase !== m.phrase);
+  else favs.unshift({phrase:m.phrase, tag:m.tag, time:Date.now()});
+  saveFavs();
+  updateFavBtn(m);
+  if(body.classList.contains('history-open')) renderDrawer();
+}
+function updateFavBtn(m){
+  const b = $('c-fav');
+  const on = isFav(m);
+  b.classList.toggle('on', on);
+  b.textContent = on ? '★' : '☆';
+  b.classList.remove('pop');
+  b.offsetHeight;
+  b.classList.add('pop');
+}
+function addToHistory(m){
+  history = history.filter(h => h.phrase !== m.phrase);
+  history.unshift({phrase:m.phrase, tag:m.tag, time:Date.now()});
+  if(history.length > 50) history.length = 50;
+  saveHistory();
+}
+function fmtTime(t){
+  const d = new Date(t), p = n => String(n).padStart(2, '0');
+  return `${d.getMonth() + 1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+let drawerTab = 'history';
+function renderDrawer(){
+  const isFavTab = drawerTab === 'favs';
+  const items = isFavTab ? favs : history;
+  $('hp-sub').textContent = isFavTab ? '你收进档案袋的老梗，都在这里' : '你戳破过的气泡，都记在这里';
+  $('hp-empty-text').innerHTML = isFavTab
+    ? '还没有收藏<br>戳开气泡，点卡片右上角的 ☆ 收进来'
+    : '还没有历史记录<br>回首页，戳几个气泡吧';
+  const ul = $('history-list');
+  ul.innerHTML = '';
+  items.forEach((h, idx)=>{
+    const li = document.createElement('li');
+    li.className = 'hp-item';
+    li.style.animationDelay = (idx * 0.04) + 's';
+    const phrase = document.createElement('span');
+    phrase.className = 'hp-phrase';
+    phrase.textContent = h.phrase;
+    const meta = document.createElement('span');
+    meta.className = 'hp-meta';
+    const em = document.createElement('em');
+    em.textContent = h.tag;
+    const time = document.createElement('time');
+    time.textContent = fmtTime(h.time);
+    meta.appendChild(em);
+    meta.appendChild(time);
+    li.appendChild(phrase);
+    li.appendChild(meta);
+    li.addEventListener('click', ()=>{
+      const m = MEMES.find(x => x.phrase === h.phrase);
+      if(!m) return;
+      closeHistory();
+      body.classList.add('detail-open');
+      fillCard(m);
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+    ul.appendChild(li);
+  });
+  $('history-empty').style.display = items.length ? 'none' : 'flex';
+}
+function openHistory(){
+  renderDrawer();
+  body.classList.add('history-open');
+}
+function closeHistory(){ body.classList.remove('history-open'); }
+
+let currentMeme = null;
+
+function normTitle(s){ return String(s).replace(/[\s，。、·！？!?,.:""「」『』()（）]/g, ''); }
+function findLinkedMeme(title, self){
+  const nt = normTitle(title);
+  if(nt.length < 2) return null;
+  let best = null;
+  MEMES.forEach(m2=>{
+    if(m2 === self) return;
+    const np = normTitle(m2.phrase);
+    if(np === nt || np.includes(nt) || nt.includes(np)){
+      if(!best || np.length > normTitle(best.phrase).length) best = m2;
+    }
+  });
+  return best;
+}
+function openLinkedMeme(m2){
+  addToHistory(m2);
+  fillCard(m2);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function fillCard(m){
+  currentMeme = m;
+  $('c-title').textContent = m.phrase;
+  $('c-tag').textContent = m.tag;
+  $('c-role').textContent = m.role;
+  $('c-desc').textContent = m.desc;
+  const q = $('c-quote');
+  if(m.quote){ q.textContent = m.quote; q.style.display = 'block'; }
+  else{ q.style.display = 'none'; }
+  const ex = EXTRA[m.phrase] || {};
+  const ob = $('c-origin-block'), sb = $('c-scene-block');
+  if(ex.o){ $('c-origin').textContent = ex.o; ob.style.display = 'block'; }
+  else{ ob.style.display = 'none'; }
+  if(ex.s){ $('c-scene').textContent = ex.s; sb.style.display = 'block'; }
+  else{ sb.style.display = 'none'; }
+  const dl = $('c-derivs');
+  dl.innerHTML = '';
+  const durls = ex.du || [];
+  m.derivs.forEach((d, i)=>{
+    const li = document.createElement('li');
+    const linked = findLinkedMeme(d.t, m);
+    if(linked){
+      const a = document.createElement('a');
+      a.className = 'deriv-link inner';
+      a.href = '#';
+      a.textContent = d.t;
+      a.title = '站内直达：' + linked.phrase;
+      a.addEventListener('click', e=>{
+        e.preventDefault();
+        openLinkedMeme(linked);
+      });
+      li.appendChild(a);
+    } else if(durls[i]){
+      const a = document.createElement('a');
+      a.className = 'deriv-link';
+      a.href = durls[i];
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = d.t;
+      li.appendChild(a);
+    } else {
+      li.appendChild(document.createTextNode(d.t));
+    }
+    if(d.n){
+      const sm = document.createElement('small');
+      sm.textContent = d.n;
+      li.appendChild(sm);
+    }
+    dl.appendChild(li);
+  });
+  const lk = $('c-links');
+  lk.innerHTML = '';
+  m.links.forEach(l=>{
+    const a = document.createElement('a');
+    a.className = 'src';
+    a.href = l.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = l.label;
+    lk.appendChild(a);
+  });
+  $('c-above').textContent = m.above;
+  updateFavBtn(m);
+  fetchZhida(m.phrase);
+}
+
+/* ---------- 知乎直答 · 实时解读（不缓存，每次打开实时请求） ---------- */
+let zhidaCtrl = null;
+
+function renderZhidaText(t){
+  return t
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/\n{2,}/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+async function fetchZhida(phrase){
+  const box = $('c-zhida');
+  if(zhidaCtrl) zhidaCtrl.abort();
+  const ctrl = new AbortController();
+  zhidaCtrl = ctrl;
+  box.innerHTML = '<span class="zhida-loading">看山正在替你联网问知乎直答</span>';
+  const q = '「' + phrase + '」是什么梗？请用150字左右介绍它的来源背景、含义和现在的使用场景';
+  try{
+    const res = await fetch('/api/zhida?q=' + encodeURIComponent(q), {signal: ctrl.signal, cache: 'no-store'});
+    if(!res.ok || !res.body){
+      let msg = '';
+      try{ msg = (await res.json()).error || ''; }catch(e2){}
+      if(/rate.?limit/i.test(msg)) msg = '知乎直答被问得太频繁，触发频率限制了，稍等片刻再点重试。';
+      else if(msg) msg = '知乎直答暂时开小差了：' + msg;
+      throw new Error(msg || 'bad response');
+    }
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let text = '';
+    box.innerHTML = '';
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      text += dec.decode(value, {stream: true});
+      box.innerHTML = renderZhidaText(text);
+    }
+    if(!text.trim()) throw new Error('empty');
+  }catch(e){
+    if(e.name === 'AbortError') return;
+    box.innerHTML = '';
+    const tip = document.createElement('div');
+    tip.className = 'zhida-err';
+    tip.textContent = (e.message && e.message !== 'bad response' && e.message !== 'empty')
+      ? e.message
+      : '实时解读连不上：请用 python3 server.py 启动本地服务后再试。';
+    const btn = document.createElement('button');
+    btn.className = 'retry';
+    btn.type = 'button';
+    btn.textContent = '重试';
+    btn.addEventListener('click', ()=> fetchZhida(phrase));
+    box.appendChild(tip);
+    box.appendChild(btn);
+  }
+}
+
+function burst(bubble){
+  const b = bubble.getBoundingClientRect();
+  const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+  const fieldRect = field.getBoundingClientRect();
+  const origin = {
+    x: cx - fieldRect.left,
+    y: cy - fieldRect.top
+  };
+  bubble.style.animation = 'none';
+  bubble.offsetHeight;
+  bubble.style.animation = 'popFade .38s ease forwards';
+  bubble.classList.add('fading');
+  const count = 10;
+  for(let i = 0; i < count; i++){
+    const s = document.createElement('span');
+    s.className = 'shard';
+    s.style.left = (origin.x - 6) + 'px';
+    s.style.top = (origin.y - 6) + 'px';
+    const ang = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.8;
+    const dist = 46 + Math.random() * 52;
+    s.style.setProperty('--dx', Math.round(Math.cos(ang) * dist) + 'px');
+    s.style.setProperty('--dy', Math.round(Math.sin(ang) * dist) + 'px');
+    s.style.animation = `fly ${0.5 + Math.random() * 0.25}s cubic-bezier(.2,.8,.3,1) forwards`;
+    field.appendChild(s);
+  }
+}
+
+function openBubble(el, i){
+  const m = queue[i];
+  burst(el);
+  setTimeout(()=>{
+    el.remove();
+    if(!queue[i]) return;
+    queue[i] = null;
+    addToHistory(m);
+    body.classList.add('detail-open');
+    fillCard(m);
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }, 220);
+  return m;
+}
+
+function render(){
+  field.innerHTML = '';
+  queue.forEach((m, i)=>{
+    if(!m) return;
+    const b = document.createElement('button');
+    b.className = 'bubble';
+    b.type = 'button';
+    b.setAttribute('role', 'listitem');
+    b.textContent = m.phrase;
+    b.style.animationDelay = (0.05 + i * 0.06) + 's';
+    b.addEventListener('click', ()=> openBubble(b, i));
+    field.appendChild(b);
+  });
+  if(queue.filter(Boolean).length === 0){
+    body.classList.add('empty');
+  } else {
+    body.classList.remove('empty');
+  }
+}
+
+function goBack(){
+  if(!body.classList.contains('detail-open')) return;
+  body.classList.remove('detail-open');
+  if(queue.filter(Boolean).length === 0) body.classList.add('empty');
+}
+
+function refresh(){
+  queue = drawBatch(POOL_SIZE);
+  body.classList.remove('detail-open', 'empty');
+  render();
+  refreshBtn.classList.add('spinning');
+  setTimeout(()=> refreshBtn.classList.remove('spinning'), 500);
+}
+
+backBtn.addEventListener('click', goBack);
+refreshBtn.addEventListener('click', refresh);
+$('history-btn').addEventListener('click', openHistory);
+$('history-close').addEventListener('click', closeHistory);
+$('history-backdrop').addEventListener('click', closeHistory);
+$('history-clear').addEventListener('click', ()=>{
+  if(drawerTab === 'favs'){
+    favs = [];
+    saveFavs();
+    if(currentMeme) updateFavBtn(currentMeme);
+  } else {
+    history = [];
+    saveHistory();
+  }
+  renderDrawer();
+});
+document.querySelectorAll('.hp-tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    drawerTab = t.dataset.tab;
+    document.querySelectorAll('.hp-tab').forEach(x=>x.classList.toggle('active', x === t));
+    renderDrawer();
+  });
+});
+$('c-fav').addEventListener('click', ()=>{ if(currentMeme) toggleFav(currentMeme); });
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape'){
+    if(body.classList.contains('share-open')) body.classList.remove('share-open');
+    else if(body.classList.contains('fortune-open')) body.classList.remove('fortune-open');
+    else if(body.classList.contains('history-open')) closeHistory();
+    else goBack();
+  }
+});
+
+/* ---------- 今日梗签 ---------- */
+const FORTUNE_YI = ['宜：抖机灵','宜：实名反对','宜：刚下飞机','宜：强答一波','宜：先马后看','宜：一键三连','宜：谢邀开场','宜：以上收尾','宜：多图预警','宜：围观脑洞'];
+const FORTUNE_JI = ['忌：挖坑不填','忌：刚编故事','忌：贵乎药丸','忌：细思极恐','忌：被蜗牛追上','忌：匿名控评','忌：图书馆30秒','忌：吃一勺太阳'];
+let fortuneMeme = null;
+function drawFortune(){
+  fortuneMeme = MEMES[Math.floor(Math.random() * MEMES.length)];
+  const yi = FORTUNE_YI[Math.floor(Math.random() * FORTUNE_YI.length)];
+  const ji = FORTUNE_JI[Math.floor(Math.random() * FORTUNE_JI.length)];
+  $('f-phrase').textContent = fortuneMeme.phrase;
+  $('f-tag').textContent = fortuneMeme.tag;
+  const ft = $('f-text');
+  ft.innerHTML = '';
+  const b1 = document.createElement('b'); b1.textContent = yi;
+  const b2 = document.createElement('b'); b2.textContent = ji;
+  ft.appendChild(b1);
+  ft.appendChild(document.createTextNode('　'));
+  ft.appendChild(b2);
+  body.classList.add('fortune-open');
+}
+$('fortune-btn').addEventListener('click', drawFortune);
+$('f-again').addEventListener('click', drawFortune);
+$('f-close').addEventListener('click', ()=> body.classList.remove('fortune-open'));
+$('fortune-mask').addEventListener('click', e=>{ if(e.target.id === 'fortune-mask') body.classList.remove('fortune-open'); });
+$('f-open').addEventListener('click', ()=>{
+  if(!fortuneMeme) return;
+  body.classList.remove('fortune-open');
+  addToHistory(fortuneMeme);
+  body.classList.add('detail-open');
+  fillCard(fortuneMeme);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+});
+
+/* ---------- 分享卡片（canvas 生成） ---------- */
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function wrapLines(ctx, text, maxW){
+  const lines = [];
+  let line = '';
+  for(const ch of text){
+    if(ch === '\n'){ lines.push(line); line = ''; continue; }
+    if(line && ctx.measureText(line + ch).width > maxW){ lines.push(line); line = ch; }
+    else line += ch;
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+function loadImg(src){
+  return new Promise((res, rej)=>{
+    const i = new Image();
+    i.onload = ()=> res(i);
+    i.onerror = rej;
+    i.src = src;
+  });
+}
+async function genShareCard(m){
+  await document.fonts.ready;
+  const W = 900;
+  const meas = document.createElement('canvas').getContext('2d');
+  meas.font = '900 52px "Noto Serif SC", serif';
+  const plines = wrapLines(meas, m.phrase, W - 160).slice(0, 2);
+  meas.font = '400 25px "Noto Sans SC", sans-serif';
+  const dlines = wrapLines(meas, m.desc, W - 160).slice(0, 7);
+  let qlines = [];
+  if(m.quote){
+    meas.font = '400 23px "Noto Sans SC", sans-serif';
+    qlines = wrapLines(meas, m.quote, W - 230).slice(0, 4);
+  }
+  const qh = qlines.length ? qlines.length * 40 + 36 : 0;
+  const contentEnd = 386 + dlines.length * 44 + 18 + qh;
+  const H = Math.max(contentEnd + 240, 780);
+
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, W, H);
+  const g = ctx.createLinearGradient(0, 0, W, 0);
+  g.addColorStop(0, '#3D8BFF');
+  g.addColorStop(1, '#0066FF');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, 250);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(255,255,255,.9)';
+  ctx.font = '500 24px "Noto Sans SC", sans-serif';
+  ctx.fillText('看 山 带 你 看 老 梗', W / 2, 62);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '900 52px "Noto Serif SC", serif';
+  plines.forEach((l, i)=> ctx.fillText(l, W / 2, 152 + i * 66));
+  let y = 306;
+  ctx.font = '600 20px "Noto Sans SC", sans-serif';
+  const tw = ctx.measureText(m.tag).width;
+  ctx.fillStyle = '#EBF3FF';
+  roundRect(ctx, W / 2 - tw / 2 - 20, y, tw + 40, 38, 19);
+  ctx.fill();
+  ctx.strokeStyle = '#C4DAFF';
+  ctx.stroke();
+  ctx.fillStyle = '#0066FF';
+  ctx.fillText(m.tag, W / 2, y + 27);
+  y += 80;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#3A4657';
+  ctx.font = '400 25px "Noto Sans SC", sans-serif';
+  dlines.forEach(l=>{
+    ctx.fillText(l, 80, y);
+    y += 44;
+  });
+  y += 18;
+  if(qlines.length){
+    ctx.fillStyle = '#EBF3FF';
+    roundRect(ctx, 80, y, W - 160, qh, 14);
+    ctx.fill();
+    ctx.fillStyle = '#0066FF';
+    ctx.fillRect(80, y, 5, qh);
+    ctx.fillStyle = '#33507A';
+    ctx.font = '400 23px "Noto Sans SC", sans-serif';
+    qlines.forEach((l, i)=> ctx.fillText(l, 112, y + 46 + i * 40));
+  }
+  try{
+    const img = await loadImg('assets/kanshan-cutout.png');
+    const mh = 220, mw = mh * img.width / img.height;
+    ctx.drawImage(img, W - mw - 50, H - mh - 30, mw, mh);
+  }catch(e){}
+  ctx.fillStyle = '#93A1B3';
+  ctx.font = '400 20px "Noto Sans SC", sans-serif';
+  ctx.fillText(m.above + ' · 以上。', 80, H - 82);
+  ctx.fillStyle = '#0066FF';
+  ctx.font = '700 22px "Noto Serif SC", serif';
+  ctx.fillText('知 · 乎 · 老 · 梗 · 录', 80, H - 42);
+  return cv.toDataURL('image/png');
+}
+let sharing = false;
+$('c-share').addEventListener('click', async ()=>{
+  if(!currentMeme || sharing) return;
+  sharing = true;
+  const btn = $('c-share');
+  btn.textContent = '…';
+  try{
+    const url = await genShareCard(currentMeme);
+    $('share-img').src = url;
+    $('share-dl').href = url;
+    $('share-dl').download = '看山老梗-' + currentMeme.phrase.slice(0, 10) + '.png';
+    body.classList.add('share-open');
+  }finally{
+    btn.textContent = '⤴';
+    sharing = false;
+  }
+});
+$('share-close').addEventListener('click', ()=> body.classList.remove('share-open'));
+$('share-mask').addEventListener('click', e=>{ if(e.target.id === 'share-mask') body.classList.remove('share-open'); });
+
+// boot
+queue = drawBatch(POOL_SIZE);
+render();
+updateHistoryCount();
+$('tab-fav-count').textContent = favs.length;
+</script>
+</body>
+</html>
