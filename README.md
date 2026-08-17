@@ -60,9 +60,7 @@ python3 server.py
 
 > 说明：`GET /api/zhida?q=...` 会实时调用 `zhihu-cli answer` 流式输出，不缓存；本地服务会读取 `~/Library/Application Support/zhihu-cli/current/zhihu-cli`。
 
-## 部署到阿里云（Docker）
-
-服务器推荐：Ubuntu 24.04 LTS（或 Alibaba Cloud Linux 3）+ Docker，2 核 2G 足够本项目运行。
+## 部署
 项目只依赖 Python 标准库，基础镜像用 `python:3.12-slim`；`zhihu-cli` 用官方 Linux 预编译版，镜像里不需要装 Node。
 
 ```bash
@@ -70,15 +68,7 @@ python3 server.py
 docker compose up -d --build
 ```
 
-访问 `http://服务器公网IP:8931`。若用 ARM 架构的倚天 710 实例，构建时加参数：
-
-```bash
-docker compose build --build-arg ZHIHU_ARCH=arm64
-docker compose up -d
-```
-
-安全组记得放行 8931 端口（以及后续如果要配域名/HTTPS，再加 80/443）。
-
+访问 `http://服务器公网IP:8931`
 部署前在服务器上的 `.env` 里补齐三样东西：
 
 ```bash
@@ -92,7 +82,7 @@ ZHIHU_ACCESS_SECRET=你的_知乎_access_secret   # zhihu-cli 登录密钥，见
 - `.env` 已被 `.dockerignore` 排除，密钥不会打进镜像层，只在容器运行时注入；
 - 本地执行 `zhihu-cli auth status` 可确认/找回 Access Secret；
 - 服务端默认监听 `HOST=0.0.0.0`（Dockerfile 已设），`PORT` 可通过环境变量覆盖；
-- `ZHIHU_CLI` 环境变量可指定 zhihu-cli 路径，未设置时 macOS 本地路径优先，其次用 PATH 里的 `zhihu`；
+- `ZHIHU_CLI` 环境变量可指定 zhihu-cli 路径，未设置时 macOS 本地路径优先。
 - 换新 DeepSeek Key 后执行 `docker compose up -d` 即可生效（镜像没变时不会重建）。
 
 ## 目录结构
