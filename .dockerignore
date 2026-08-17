@@ -1,0 +1,8 @@
+# 不把本地密钥、git 和缓存带进镜像
+.env
+.git
+data/
+__pycache__/
+*.py[cod]
+*.log
+.DS_Store

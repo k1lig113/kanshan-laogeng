@@ -6,3 +6,7 @@ __pycache__/
 # 本地环境
 .env
 *.log
+data/
+
+# 本地截图 / 设计临时文件（仅根目录 png，不影响 assets/poses/*.png）
+/*.png

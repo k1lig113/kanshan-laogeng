@@ -1,0 +1,16 @@
+services:
+  kanshan:
+    build: .
+    image: kanshan-laogeng:latest
+    container_name: kanshan-laogeng
+    ports:
+      - "8931:8931"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      # 知乎直答登录密钥：把本地配置里的 Access Secret 填进服务器 .env
+      # ZHIHU_ACCESS_SECRET: 你的_密钥
+    restart: unless-stopped

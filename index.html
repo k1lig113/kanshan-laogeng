@@ -34,7 +34,6 @@ body{
   color:var(--ink);
   min-height:100vh;
   line-height:1.6;
-  overflow-x:hidden;
 }
 
 /* ---------- panel & hero ---------- */
@@ -52,12 +51,35 @@ body{
   padding:56px 24px 20px;
   text-align:center;
 }
+.avatar-stage{
+  position:relative;width:92px;height:112px;margin:0 auto 20px;
+  cursor:pointer;
+  animation:avatarFloat 4.6s ease-in-out infinite;
+  transition:box-shadow .35s;
+}
+.avatar-stage:hover{filter:drop-shadow(0 8px 16px rgba(0,60,160,.28))}
+.avatar-stage:active{animation:heroPoke .45s cubic-bezier(.2,1.3,.4,1)}
 .hero-avatar{
-  width:92px;height:92px;border-radius:50%;object-fit:contain;
-  padding:8px;background:#fff;
-  border:3px solid #fff;
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;border-radius:50%;padding:6px;
+  background:#fff;border:3px solid #fff;
   box-shadow:0 0 0 4px var(--zhihu-soft), 0 14px 34px -12px rgba(0,60,160,.4);
-  margin-bottom:20px;
+  transition:transform .35s cubic-bezier(.2,1.4,.4,1), box-shadow .35s;
+}
+.avatar-stage:hover .hero-avatar{
+  transform:scale(1.07) rotate(-3deg);
+  box-shadow:0 0 0 9px var(--zhihu-soft), 0 18px 42px -12px rgba(0,60,160,.45);
+}
+@keyframes avatarFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+}
+.avatar-stage.hero-poke{animation:heroPoke .45s cubic-bezier(.2,1.3,.4,1)}
+@keyframes heroPoke{
+  0%{transform:scale(1)}
+  35%{transform:scale(1.18,.82) rotate(-6deg)}
+  65%{transform:scale(.94,1.08) rotate(4deg)}
+  100%{transform:scale(1)}
 }
 .kicker{
   font-family:"Noto Serif SC",serif;
@@ -101,25 +123,39 @@ h1 .accent{color:var(--accent)}
   font-size:13px;
   letter-spacing:.04em;
 }
-.stars{color:var(--faint);font-size:12px;text-align:center;margin-bottom:20px;letter-spacing:.35em}
 
-/* ---------- toolbar ---------- */
-.toolbar{display:flex;justify-content:center;align-items:center;gap:14px;margin:34px auto 4px}
-#history-btn, #fortune-btn{
-  height:40px;padding:0 18px;border-radius:100px;
-  border:1px solid var(--ring);
-  background:var(--zhihu-soft);
-  color:var(--zhihu);font-size:13px;letter-spacing:.12em;font-weight:500;
-  font-family:"Noto Sans SC",sans-serif;
-  cursor:pointer;display:flex;align-items:center;gap:8px;
-  transition:background .3s,color .3s,border-color .3s,transform .2s;
+/* ---------- 导航栏（原 toolbar） ---------- */
+.toolbar{
+  display:flex;justify-content:center;align-items:stretch;gap:6px;
+  width:min(720px, calc(100% - 32px));
+  margin:26px auto 20px;padding:8px;
+  background:rgba(255,255,255,.66);
+  border:1px solid var(--card-line);border-radius:18px;
+  box-shadow:0 12px 30px -18px rgba(0,40,120,.35);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
-#history-btn:hover, #fortune-btn:hover{background:#DBEAFF;transform:translateY(-2px)}
-#history-btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.toolbar button{
+  flex:1 1 0;min-width:0;height:52px;padding:6px 2px;border:0;border-radius:12px;
+  background:transparent;color:var(--muted);position:relative;
+  font-family:"Noto Sans SC",sans-serif;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  transition:background .2s,color .2s,transform .15s;
+}
+.toolbar .nav-ico{font-size:18px;line-height:1}
+.toolbar .nav-txt{font-size:11px;letter-spacing:.06em;font-weight:500}
+.toolbar button:hover{background:var(--zhihu-soft);color:var(--zhihu);transform:translateY(-1px)}
+.toolbar button:active{transform:scale(.95)}
+#history-btn:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
 #history-count{
-  min-width:20px;height:20px;padding:0 6px;border-radius:100px;
-  background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+  position:absolute;top:4px;right:10px;min-width:17px;height:17px;padding:0 5px;
+  border-radius:100px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;
   display:inline-flex;align-items:center;justify-content:center;
+}
+body.dark .toolbar{background:rgba(16,27,46,.66);border-color:rgba(127,168,255,.16)}
+body.dark .toolbar button:hover{background:#1B2D4A;color:#AECBFF}
+@media (max-width:600px){
+  .toolbar{width:calc(100% - 20px);overflow-x:auto;justify-content:flex-start;scrollbar-width:none}
+  .toolbar button{flex:0 0 auto;min-width:56px}
 }
 
 /* ---------- history drawer ---------- */
@@ -205,10 +241,6 @@ body.history-open #history-panel{transform:none}
 }
 .hp-phrase::before{content:"·";color:var(--zhihu);font-weight:900;margin-right:8px}
 .hp-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:0 0 auto}
-.hp-meta em{
-  font-style:normal;font-size:10px;letter-spacing:.14em;color:var(--zhihu);
-  border:1px solid var(--ring);background:var(--zhihu-soft);border-radius:100px;padding:1px 8px;
-}
 .hp-meta time{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
 .hp-empty{
   display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;text-align:center;
@@ -216,18 +248,21 @@ body.history-open #history-panel{transform:none}
   font-family:"Noto Serif SC",serif;letter-spacing:.12em;
 }
 .hp-empty img{width:84px;margin-bottom:16px}
-#refresh{
-  width:54px;height:54px;border-radius:50%;
-  border:1px solid var(--ring);
-  background:var(--zhihu-soft);
-  color:var(--zhihu);font-size:26px;line-height:1;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:transform .45s cubic-bezier(.16,1,.3,1), background .3s;
+.refresh-big{
+  display:block;margin:20px auto 6px;padding:8px;border:0;background:transparent;
+  color:var(--zhihu);cursor:pointer;line-height:1;
+  transition:color .2s, transform .2s;
 }
-#refresh:hover{background:#DBEAFF;transform:rotate(180deg)}
-#refresh:active{transform:rotate(180deg) scale(.92)}
-#refresh.spinning{transform:rotate(360deg)}
-#refresh:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.refresh-big .rb-ico{width:34px;height:34px;display:block}
+.refresh-big:hover{color:var(--zhihu-deep);transform:scale(1.08)}
+.refresh-big:active{transform:scale(.92)}
+@keyframes rbSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.refresh-big.spinning{animation:rbSpin .8s linear infinite}
+body.dark .refresh-big{color:#7FA8FF}
+body.dark .refresh-big:hover{color:#AECBFF}
+@media (max-width:600px){
+  .refresh-big .rb-ico{width:30px;height:30px}
+}
 
 /* ---------- bubbles ---------- */
 #bubble-field{
@@ -315,10 +350,6 @@ body.empty #field-empty{display:block}
 @keyframes favPop{40%{transform:scale(1.35)}}
 .card .h-row{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 .card h2{font-weight:900;font-size:32px;color:var(--ink);line-height:1.2}
-.card .h-row .tag{
-  font-size:11px;font-weight:600;letter-spacing:.18em;color:var(--zhihu);
-  border:1px solid var(--ring);background:var(--zhihu-soft);border-radius:100px;padding:3px 12px;font-family:"Noto Sans SC",sans-serif;
-}
 .card .role{font-size:12px;color:var(--faint);letter-spacing:.12em;margin-top:6px}
 .card p.card-desc{margin:14px 0 8px;font-size:15px;color:#3A4657;line-height:1.85}
 .card blockquote{
@@ -405,7 +436,9 @@ body.empty #field-empty{display:block}
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   display:none;align-items:center;justify-content:center;z-index:60;padding:20px;
 }
-body.fortune-open #fortune-mask, body.share-open #share-mask{display:flex}
+body.fortune-open #fortune-mask, body.share-open #share-mask,
+body.quiz-open #quiz-mask, body.graph-open #graph-mask,
+body.timeline-open #timeline-mask{display:flex}
 .fortune-card{
   position:relative;width:min(380px,92vw);background:#fff;border-radius:18px;
   padding:34px 30px 26px;text-align:center;
@@ -416,7 +449,6 @@ body.fortune-open #fortune-mask, body.share-open #share-mask{display:flex}
 .f-mascot{width:62px;margin-bottom:8px}
 .f-label{font-size:11px;letter-spacing:.5em;color:var(--faint);font-family:"Noto Serif SC",serif;margin-bottom:14px}
 .f-phrase{font-family:"Noto Serif SC",serif;font-weight:900;font-size:24px;color:var(--ink);line-height:1.45;margin-bottom:12px}
-.f-tag{display:inline-block;font-size:10px;letter-spacing:.16em;color:var(--zhihu);border:1px solid var(--ring);background:var(--zhihu-soft);border-radius:100px;padding:2px 12px}
 .f-divider{color:#D8CBE0;margin:16px 0 10px;font-size:12px;letter-spacing:.3em}
 .f-text{font-size:14px;color:#8A5A44;line-height:2;font-family:"Noto Serif SC",serif;min-height:34px}
 .f-text b{color:var(--accent);font-weight:700}
@@ -445,22 +477,494 @@ body.fortune-open #fortune-mask, body.share-open #share-mask{display:flex}
 .share-box .f-actions{margin-top:18px}
 .share-hint{margin-top:10px;color:rgba(255,255,255,.75);font-size:11px;letter-spacing:.1em}
 
+/* ---------- bubble tip（速读） ---------- */
+.bubble::after{
+  content:attr(data-tip);
+  position:absolute;bottom:calc(100% + 10px);left:50%;
+  transform:translateX(-50%) translateY(4px);
+  background:#fff;color:var(--ink);font-size:12px;font-weight:400;
+  font-family:"Noto Sans SC",sans-serif;letter-spacing:.02em;
+  padding:5px 12px;border-radius:100px;white-space:nowrap;
+  box-shadow:0 8px 20px -6px rgba(0,60,160,.35);border:1px solid var(--card-line);
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:5;
+}
+.bubble:hover::after{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- daily strip ---------- */
+#daily-strip{
+  max-width:640px;margin:18px auto 0;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:10px 20px;border-radius:100px;background:var(--zhihu-soft);border:1px solid var(--ring);
+  cursor:pointer;transition:transform .2s,background .25s;
+}
+#daily-strip:hover{background:#DBEAFF;transform:translateY(-2px)}
+#daily-strip .d-label{font-size:11px;letter-spacing:.2em;color:var(--accent);font-weight:700;flex:0 0 auto}
+#daily-strip .d-phrase{font-family:"Noto Serif SC",serif;font-weight:800;font-size:15px;color:var(--zhihu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#daily-strip .d-go{font-size:11px;color:var(--faint);flex:0 0 auto}
+
+/* ---------- kanshan say ---------- */
+.kanshan-say{
+  position:fixed;z-index:80;max-width:250px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F4F9FF 100%);
+  color:var(--ink);font-size:13px;line-height:1.75;
+  padding:11px 15px 12px;border-radius:14px;border:1px solid var(--ring);
+  box-shadow:0 16px 42px -12px rgba(0,40,120,.42);
+  font-family:"Noto Sans SC",sans-serif;pointer-events:none;
+  animation:sayIn .32s cubic-bezier(.16,1,.3,1) both;
+  transform-origin:bottom center;
+}
+.kanshan-say::before{
+  content:"";position:absolute;top:100%;left:50%;
+  margin-left:-8px;border:8px solid transparent;
+  border-top-color:var(--ring);
+}
+.kanshan-say::after{
+  content:"";position:absolute;top:100%;left:50%;
+  margin-left:-7px;border:7px solid transparent;
+  border-top-color:#F4F9FF;
+}
+.kanshan-say .caret{
+  display:inline-block;width:2px;height:1em;
+  background:var(--zhihu);vertical-align:-2px;margin-left:1px;
+  animation:caretBlink .7s steps(2) infinite;
+}
+@keyframes caretBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes sayIn{from{opacity:0;transform:translateY(10px) scale(.9)}to{opacity:1;transform:none}}
+
+/* thinking bubble（直答流式时看山的小心思） */
+.kanshan-think{
+  position:fixed;z-index:80;max-width:150px;
+  background:#fff;color:var(--muted);font-size:12px;letter-spacing:.06em;
+  padding:6px 13px;border-radius:100px;border:1px solid var(--ring);
+  box-shadow:0 10px 26px -8px rgba(0,40,120,.35);
+  font-family:"Noto Sans SC",sans-serif;pointer-events:none;
+  animation:sayIn .25s ease both;text-align:center;white-space:nowrap;
+}
+.kanshan-think .dot{animation:caretBlink 1s steps(2) infinite}
+
+/* ---------- quiz ---------- */
+.quiz-card{width:min(460px,92vw);text-align:left;border-top-color:var(--zhihu)}
+.q-progress{font-size:11px;color:var(--faint);letter-spacing:.2em;text-align:center;margin-bottom:14px}
+.q-role{font-family:"Noto Serif SC",serif;font-weight:800;font-size:18px;color:var(--ink);text-align:center;margin-bottom:20px;line-height:1.6}
+.q-opts{display:flex;flex-direction:column;gap:10px}
+.q-opt{
+  border:1px solid var(--ring);background:#fff;border-radius:12px;padding:12px 18px;
+  font-size:14px;color:var(--ink);cursor:pointer;text-align:left;
+  font-family:"Noto Serif SC",serif;font-weight:600;transition:all .2s;
+}
+.q-opt:hover{background:var(--zhihu-soft)}
+.q-opt.right{background:#E8F7EE;border-color:#3BB273;color:#1E7A4A}
+.q-opt.wrong{background:#FDEEEC;border-color:var(--accent);color:var(--accent)}
+.q-result{text-align:center}
+.q-score{font-family:"Noto Serif SC",serif;font-weight:900;font-size:52px;color:var(--zhihu)}
+.q-tier{font-size:16px;font-weight:700;color:var(--accent);margin:8px 0 6px;font-family:"Noto Serif SC",serif}
+.q-analysis{
+  margin-top:18px;text-align:left;max-height:46vh;overflow-y:auto;
+  padding:2px 4px 8px;scrollbar-width:thin;
+}
+.qa-head{font-size:12px;letter-spacing:.24em;color:var(--zhihu);font-weight:700;text-align:center;margin-bottom:10px}
+.qa-item{
+  border:1px solid var(--card-line);border-radius:12px;padding:10px 12px;margin-bottom:10px;
+  background:#fff;
+}
+.qa-item.qa-wrong{border-color:rgba(232,104,90,.45);background:#FFF8F6}
+.qa-item.qa-right{border-color:rgba(59,178,115,.4);background:#F3FBF6}
+.qa-q{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.5;margin-bottom:6px}
+.qa-mine{font-size:12px;color:var(--muted);margin-bottom:3px}
+.qa-corr{font-size:12px;font-weight:600;color:#1E7A4A;margin-bottom:4px}
+.qa-item.qa-wrong .qa-corr{color:#C0503A}
+.qa-exp{font-size:11.5px;color:var(--faint);line-height:1.7}
+body.dark .qa-item{background:#15233D;border-color:rgba(127,168,255,.18)}
+body.dark .qa-item.qa-right{background:#132B22;border-color:rgba(59,178,115,.35)}
+body.dark .qa-item.qa-wrong{background:#2B1C1A;border-color:rgba(232,104,90,.4)}
+body.dark .qa-mine{color:#A9B8CC}
+body.dark .qa-exp{color:#8FA3BD}
+.q-comment{font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:6px}
+
+/* ---------- graph ---------- */
+.graph-box{position:relative;background:#fff;border-radius:18px;padding:20px 20px 12px;box-shadow:0 40px 100px -20px rgba(0,30,90,.5);animation:stageIn .4s cubic-bezier(.16,1,.3,1) both}
+.graph-title{font-family:"Noto Serif SC",serif;font-weight:900;font-size:18px;text-align:center;margin-bottom:10px;letter-spacing:.1em}
+#graph-canvas{display:block;border-radius:12px;cursor:grab;touch-action:none}
+.graph-hint{text-align:center;color:var(--faint);font-size:11px;margin-top:8px;letter-spacing:.08em}
+
+/* 星图：画布铺满弹窗，标题/提示/按钮悬浮在画布上 */
+body.graph-open .modal-mask{padding:8px}
+body.graph-open .graph-box{padding:0;overflow:hidden}
+body.graph-open .graph-title{
+  position:absolute;top:10px;left:16px;z-index:3;margin:0;font-size:15px;letter-spacing:.14em;
+  background:rgba(255,255,255,.85);color:#33507A;padding:5px 14px;border-radius:100px;
+  box-shadow:0 2px 10px rgba(0,30,90,.15);pointer-events:none;
+}
+body.graph-open .graph-hint{
+  position:absolute;bottom:10px;left:16px;z-index:3;margin:0;font-size:10px;
+  color:rgba(51,80,122,.78);background:rgba(255,255,255,.72);padding:4px 12px;
+  border-radius:100px;pointer-events:none;
+}
+body.graph-open .graph-toggle{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:4;margin:0;
+  background:rgba(255,255,255,.88);color:var(--zhihu);border:1px solid rgba(0,102,255,.25);
+  font-size:12px;padding:5px 16px;border-radius:100px;cursor:pointer;
+  font-family:"Noto Sans SC",sans-serif;box-shadow:0 2px 10px rgba(0,30,90,.12);
+  backdrop-filter:blur(3px);transition:background .2s;
+}
+body.graph-open .graph-toggle:hover{background:#fff}
+body.dark.graph-open .graph-title, body.dark.graph-open .graph-hint{
+  background:rgba(15,27,46,.78);color:#C7D6EF;
+}
+body.dark.graph-open .graph-toggle{background:rgba(15,27,46,.85);color:#7FA8FF;border-color:rgba(127,168,255,.35)}
+body.dark.graph-open .graph-toggle:hover{background:#15233D}
+.graph-tip{
+  position:fixed;z-index:70;background:var(--card);color:var(--ink);
+  border:1px solid var(--ring);border-radius:10px;padding:6px 12px;
+  font-size:12px;font-family:"Noto Sans SC",sans-serif;
+  box-shadow:0 10px 26px -8px rgba(0,40,120,.4);pointer-events:none;
+  max-width:280px;white-space:nowrap;display:none;
+}
+
+/* ---------- zhida flavors ---------- */
+.zhida-flavors{display:inline-flex;gap:6px;margin-left:10px;vertical-align:1px}
+.zf-btn{
+  border:1px solid var(--ring);background:#fff;color:var(--zhihu);
+  font-size:10px;padding:2px 10px;border-radius:100px;cursor:pointer;
+  font-family:"Noto Sans SC",sans-serif;letter-spacing:.05em;transition:background .2s;
+}
+.zf-btn:hover{background:var(--zhihu-soft)}
+
+/* ---------- report ---------- */
+.report{padding:30px 24px;text-align:center}
+.ring{
+  width:130px;height:130px;border-radius:50%;margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:conic-gradient(var(--zhihu) calc(var(--p, 0)*1%), var(--zhihu-soft) 0);
+  position:relative;
+}
+.ring::before{content:"";position:absolute;inset:10px;border-radius:50%;background:#fff}
+.ring b{position:relative;font-family:"Noto Serif SC",serif;font-weight:900;font-size:24px;color:var(--zhihu)}
+.ring small{position:relative;font-size:10px;color:var(--faint);letter-spacing:.14em;margin-top:2px}
+.r-tier{font-family:"Noto Serif SC",serif;font-weight:800;font-size:18px;color:var(--accent);margin-bottom:8px}
+.r-line{font-size:13px;color:var(--muted);line-height:2}
+
 /* ---------- footer ---------- */
 footer{
   text-align:center;padding:8px 20px 130px;color:rgba(255,255,255,.82);font-size:12px;
   font-family:"Noto Serif SC",serif;letter-spacing:.14em;position:relative;z-index:2;
 }
+.global-stats{
+  margin-top:8px;color:rgba(255,255,255,.68);font-size:11px;letter-spacing:.1em;
+  font-family:"Noto Sans SC",sans-serif;
+}
 
 /* ---------- kanshan mascots ---------- */
 .mascot{
   position:fixed;bottom:-14px;width:150px;z-index:1;
-  pointer-events:none;user-select:none;
-  filter:drop-shadow(0 10px 26px rgba(0,30,90,.35));
-  animation:bob 5s ease-in-out infinite;
+  pointer-events:auto;cursor:grab;user-select:none;
+  filter:drop-shadow(0 12px 28px rgba(0,30,90,.32));
+  animation:idleBob 5.2s ease-in-out infinite;
+  will-change:transform;
+  touch-action:manipulation;
+}
+.mascot:active{cursor:grabbing}
+.mascot:focus-visible{outline:3px solid var(--accent);outline-offset:6px;border-radius:20px}
+.mascot-img{
+  position:relative;display:block;
+  transform:rotate(var(--gaze, 0deg));
+  transition:transform .35s cubic-bezier(.2,1.2,.35,1);
+  transform-origin:50% 92%;
+}
+.mascot img{
+  width:100%;display:block;pointer-events:none;
+  -webkit-user-drag:none;user-select:none;
+}
+.mascot-right img{transform:scaleX(-1)}
+.mascot-shadow{
+  position:absolute;left:10%;right:10%;bottom:2px;height:18px;
+  background:radial-gradient(ellipse at center, rgba(10,35,90,.38) 0%, rgba(10,35,90,0) 68%);
+  transition:transform .3s ease, opacity .3s ease;
+  z-index:-1;
+}
+.mascot-fx{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:6}
+.fx-emoji{
+  position:absolute;top:-8px;font-size:22px;pointer-events:none;
+  animation:fxFloat 1.05s ease-out forwards;z-index:6;
+}
+@keyframes fxFloat{
+  from{opacity:0;transform:translate(-50%,0) scale(.5)}
+  30%{opacity:1;transform:translate(calc(-50% + var(--dx,0px)), -12px) scale(1.05)}
+  to{opacity:0;transform:translate(calc(-50% + var(--dx,0px)), -52px) scale(1.2)}
+}
+@keyframes idleBob{
+  0%,100%{transform:translateY(0) rotate(-1.4deg)}
+  50%{transform:translateY(-9px) rotate(1.4deg)}
 }
 .mascot-left{left:max(16px, calc(50% - 640px))}
-.mascot-right{right:max(16px, calc(50% - 640px));transform:scaleX(-1);animation-delay:2.5s}
-@keyframes bob{0%,100%{margin-bottom:0}50%{margin-bottom:10px}}
+.mascot-right{right:max(16px, calc(50% - 640px));animation-delay:2.6s}
+
+/* 戳一戳 / 开心 / 犯困 / 刚睡醒 / 转圈 / 拎起来 */
+.mascot.poked .mascot-img{animation:squishAnim .4s cubic-bezier(.2,1.2,.4,1)}
+@keyframes squishAnim{
+  0%{transform:scale(1,1)}
+  30%{transform:scale(1.13,.85)}
+  60%{transform:scale(.92,1.1)}
+  100%{transform:scale(1,1)}
+}
+.mascot.happy{animation:hopAnim .62s cubic-bezier(.2,1.2,.3,1)}
+@keyframes hopAnim{
+  0%,100%{transform:translateY(0) rotate(0)}
+  22%{transform:translateY(-30px) rotate(-5deg)}
+  48%{transform:translateY(0) rotate(0)}
+  72%{transform:translateY(-15px) rotate(4deg)}
+}
+.mascot.happy .mascot-shadow{transform:scale(.72);opacity:.65}
+.mascot.dizzy{animation:dizzyAnim .85s ease-in-out}
+@keyframes dizzyAnim{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.mascot.wake{animation:wakeAnim .55s cubic-bezier(.2,1.3,.4,1)}
+@keyframes wakeAnim{
+  0%{transform:translateY(0) scale(1,1)}
+  35%{transform:translateY(-16px) scale(1.07,.9)}
+  60%{transform:translateY(2px)}
+  100%{transform:translateY(0)}
+}
+.mascot.sleep{animation-play-state:paused}
+.mascot.sleep .mascot-img{animation:sleepBreath 4.2s ease-in-out infinite}
+@keyframes sleepBreath{
+  0%,100%{transform:translateY(1px) rotate(-4deg) scale(1,1)}
+  50%{transform:translateY(4px) rotate(-4deg) scale(1.03,.95)}
+}
+.mascot.sleep .mascot-shadow{transform:scale(.9);opacity:.8}
+.mascot.drag{
+  animation:none;z-index:90;cursor:grabbing;
+  filter:drop-shadow(0 22px 34px rgba(0,30,90,.45));
+}
+.mascot.drag .mascot-img{transition:none}
+.mascot.returning{
+  animation:none;z-index:90;
+  transition:transform .68s cubic-bezier(.2,1.15,.3,1);
+}
+.mascot.thinking .mascot-img{transform:rotate(-6deg)}
+
+.f-mascot.f-shake{animation:fShake .5s ease}
+@keyframes fShake{
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(-9deg) translateX(-2px)}
+  50%{transform:rotate(8deg) translateX(2px)}
+  75%{transform:rotate(-5deg)}
+}
+
+/* ---------- 好感度徽章 ---------- */
+.level-badge{
+  position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#FFD36E 0%,#FF9F43 100%);
+  color:#5A3200;font-size:10px;font-weight:700;letter-spacing:.1em;
+  padding:2px 11px;border-radius:100px;white-space:nowrap;
+  box-shadow:0 6px 14px -4px rgba(255,150,50,.55);
+  font-family:"Noto Sans SC",sans-serif;z-index:3;
+  border:1px solid rgba(255,255,255,.8);
+  transition:transform .3s;
+}
+.level-badge.pulse{animation:badgePulse .6s cubic-bezier(.2,1.3,.4,1)}
+@keyframes badgePulse{0%,100%{transform:translateX(-50%) scale(1)}40%{transform:translateX(-50%) scale(1.18)}}
+
+/* ---------- 连击得分 / 暴走 ---------- */
+.combo-pop{
+  position:fixed;z-index:55;font-family:"Noto Serif SC",serif;font-weight:900;
+  color:#fff;background:linear-gradient(135deg,#FF9F43,#FF5E5E);
+  padding:4px 14px;border-radius:100px;font-size:14px;letter-spacing:.08em;
+  box-shadow:0 10px 24px -8px rgba(255,90,90,.6);
+  pointer-events:none;animation:comboPop 1s cubic-bezier(.2,1.2,.3,1) forwards;
+}
+@keyframes comboPop{
+  0%{opacity:0;transform:translate(-50%,10px) scale(.6)}
+  25%{opacity:1;transform:translate(-50%,-6px) scale(1.08)}
+  100%{opacity:0;transform:translate(-50%,-48px) scale(1)}
+}
+body.frenzy .bubble{animation-duration:.55s}
+body.frenzy #bubble-field{animation:frenzyPulse .5s ease-in-out infinite}
+@keyframes frenzyPulse{0%,100%{filter:none}50%{filter:drop-shadow(0 0 18px rgba(255,120,60,.55))}}
+
+/* ---------- 已读角标 ---------- */
+.bubble.read{opacity:.6}
+.bubble.read::before{
+  content:"✓";position:absolute;top:-7px;right:-7px;width:18px;height:18px;
+  border-radius:50%;background:var(--accent);color:#fff;font-size:10px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 10px -3px rgba(232,104,90,.8);z-index:4;
+}
+
+/* ---------- 弹幕回声 ---------- */
+.danmaku{
+  position:fixed;left:0;top:var(--ty,120px);z-index:15;
+  font-family:"Noto Sans SC",sans-serif;white-space:nowrap;pointer-events:none;
+  color:rgba(0,102,255,.5);text-shadow:0 1px 0 rgba(255,255,255,.6);
+  animation:danmakuFly linear forwards;
+}
+body.dark .danmaku{color:rgba(120,170,255,.55);text-shadow:none}
+@keyframes danmakuFly{from{transform:translateX(104vw)}to{transform:translateX(-112vw)}}
+
+/* ---------- 梗学快问 ---------- */
+#quick-quiz{
+  margin-top:18px;padding:16px 18px;border:1px dashed var(--ring);
+  border-radius:12px;background:var(--zhihu-soft);
+}
+.qq-title{
+  font-size:11px;letter-spacing:.24em;color:var(--accent);font-weight:700;
+  font-family:"Noto Sans SC",sans-serif;margin-bottom:8px;
+}
+.quiz-loading{padding:8px 0 4px}
+.quiz-answer{margin-top:12px;padding:12px 14px;border-radius:10px;background:#E8F7EE;border:1px solid #3BB273;color:#1E7A4A;font-size:13px;line-height:1.8;font-family:"Noto Sans SC",sans-serif}
+.quiz-answer.wrong-answer{background:#FDEEEC;border-color:var(--accent);color:var(--accent)}
+.qq-ans-label{font-weight:700;letter-spacing:.08em;margin-bottom:4px}
+.qq-expl{color:#2F6B4D;font-size:12.5px}
+
+/* ---------- 梗编年史 ---------- */
+.timeline-box{
+  width:min(900px,94vw);background:var(--card);border-radius:18px;
+  padding:26px 20px 18px;box-shadow:0 40px 100px -20px rgba(0,30,90,.5);
+  animation:stageIn .4s cubic-bezier(.16,1,.3,1) both;position:relative;
+  max-height:min(720px,86vh);display:flex;flex-direction:column;
+}
+.timeline-box .graph-title{flex:0 0 auto}
+.timeline-box .graph-hint{flex:0 0 auto}
+.tl-scroll{
+  position:relative;display:flex;gap:2px;align-items:flex-start;overflow:auto;padding:26px 8px 12px;
+  flex:1 1 auto;min-height:0;
+  scrollbar-width:thin;scrollbar-color:var(--faint) transparent;
+}
+.tl-year{
+  flex:0 0 auto;min-width:96px;display:flex;flex-direction:column;align-items:center;
+  position:relative;z-index:1;
+}
+.tl-year::before{
+  content:"";position:absolute;top:7px;left:-2px;right:-2px;height:2px;
+  background:var(--ring);border-radius:2px;z-index:-1;
+}
+.tl-dot{
+  width:14px;height:14px;border-radius:50%;background:var(--zhihu);
+  box-shadow:0 0 0 4px var(--zhihu-soft);margin-bottom:8px;
+}
+.tl-label{
+  font-family:"Noto Serif SC",serif;font-weight:900;font-size:15px;color:var(--ink);
+  margin-bottom:10px;letter-spacing:.05em;
+}
+.tl-memes{display:flex;flex-direction:column;gap:8px;align-items:center}
+.tl-meme{
+  font-family:"Noto Sans SC",sans-serif;font-size:12px;color:var(--zhihu);
+  background:var(--zhihu-soft);border:1px solid var(--ring);border-radius:100px;
+  padding:4px 13px;cursor:pointer;white-space:nowrap;transition:all .2s;
+}
+.tl-meme:hover{background:#DBEAFF;transform:translateY(-2px)}
+body.dark .tl-meme:hover{background:#1B2D4A}
+
+/* ---------- 今日挑战 ---------- */
+.challenge{
+  margin:16px 0 0;padding:16px 18px;border:1px dashed var(--ring);
+  border-radius:12px;background:var(--zhihu-soft);text-align:left;
+}
+.challenge-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.challenge-head span{font-family:"Noto Serif SC",serif;font-weight:800;font-size:14px;color:var(--ink)}
+.challenge-head em{
+  font-style:normal;font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.1em;
+}
+.challenge-bar{height:8px;border-radius:100px;background:var(--card-line);overflow:hidden}
+.challenge-bar i{
+  display:block;height:100%;width:0%;
+  background:linear-gradient(90deg,var(--zhihu),#5B9BFF);border-radius:100px;
+  transition:width .45s cubic-bezier(.2,1,.3,1);
+}
+.challenge-sub{margin-top:8px;font-size:11px;color:var(--faint);letter-spacing:.06em}
+.challenge.done{border-color:#3BB273;background:#E8F7EE}
+body.dark .challenge.done{background:#0E2B1D;border-color:#3BB273}
+.challenge.done .challenge-head em{color:#1E7A4A}
+
+/* ---------- 分享接力 ---------- */
+.relay-box{margin-top:14px;text-align:left;width:min(340px,84vw)}
+.relay-input-row{display:flex;gap:8px}
+#relay-input{
+  flex:1;height:34px;border-radius:100px;border:1px solid var(--ring);
+  background:#fff;padding:0 14px;font-size:12px;color:var(--ink);outline:none;
+  font-family:"Noto Sans SC",sans-serif;transition:border-color .2s,box-shadow .2s;
+}
+body.dark #relay-input{background:#15233D;color:var(--ink)}
+#relay-input:focus{border-color:var(--zhihu);box-shadow:0 0 0 3px rgba(0,102,255,.14)}
+#relay-add{
+  border:1px solid var(--zhihu);background:var(--zhihu);color:#fff;
+  font-size:12px;padding:0 16px;border-radius:100px;cursor:pointer;
+  font-family:"Noto Sans SC",sans-serif;letter-spacing:.08em;transition:background .25s;
+}
+#relay-add:hover{background:var(--zhihu-deep)}
+.relay-chain{list-style:none;margin-top:10px;max-height:120px;overflow-y:auto}
+.relay-chain li{
+  font-size:11.5px;color:var(--muted);line-height:1.7;padding:4px 2px;
+  border-bottom:1px dashed var(--card-line);
+}
+.relay-chain li b{color:var(--zhihu);font-weight:600}
+.relay-chain li time{float:right;color:var(--faint);font-size:10px}
+.relay-hint{margin-top:8px;color:var(--faint);font-size:10px;letter-spacing:.08em}
+
+/* ---------- 拖喂气泡 ---------- */
+.bubble-ghost{
+  position:fixed;z-index:70;max-width:220px;
+  background:var(--zhihu);color:#fff;border-radius:12px;
+  font-family:"Noto Serif SC",serif;font-weight:800;font-size:14px;
+  padding:12px 18px;text-align:center;
+  transform:translate(-50%,-50%) rotate(-4deg) scale(1.04);
+  box-shadow:0 18px 40px -10px rgba(0,60,160,.55);
+  pointer-events:none;
+}
+.mascot.drop-target{animation:none;filter:drop-shadow(0 0 14px rgba(255,170,60,.9))}
+.mascot.drop-target .mascot-img{animation:squishAnim .5s ease-in-out infinite}
+
+/* ---------- 无障碍 ---------- */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- 深夜 / 深色模式 ---------- */
+body.dark{
+  --ink:#E8EEF7;
+  --muted:#A7B4C6;
+  --faint:#6F7F99;
+  --zhihu:#5B9BFF;
+  --zhihu-deep:#4B8BEE;
+  --zhihu-soft:#14233C;
+  --card:#101B2E;
+  --card-line:#24344F;
+  --bubble-inner:#14233C;
+  --bubble-ink:#8FB6FF;
+  --ring:#2B3F61;
+  background:radial-gradient(1100px 560px at 85% -10%, rgba(80,140,255,.12) 0%, transparent 60%),
+             radial-gradient(900px 520px at 0% 105%, rgba(80,140,255,.08) 0%, transparent 55%),
+             linear-gradient(165deg,#152743 0%, #0E1B30 46%, #0A1425 100%);
+}
+body.dark .kanshan-say{background:linear-gradient(180deg,#16243C 0%,#101C30 100%);color:var(--ink);border-color:var(--ring)}
+body.dark .kanshan-say::after{border-top-color:#101C30}
+body.dark .kanshan-say::before{border-top-color:var(--ring)}
+body.dark .kanshan-think{background:#16243C;color:var(--muted);border-color:var(--ring)}
+body.dark .bubble{box-shadow:0 8px 18px -10px rgba(0,30,80,.8)}
+body.dark .bubble:hover{background:#1B2D4A}
+body.dark .bubble::after{background:#15233D;color:var(--ink);border-color:var(--card-line)}
+body.dark .card{color:#D6DFEB}
+body.dark .card p.card-desc, body.dark .card p.card-sec, body.dark .card ul.derivs li{color:#C2CCDB}
+body.dark .card blockquote{color:#AECBFF;background:#14233C}
+body.dark .zhida-box{background:linear-gradient(135deg,#111F36 0%,#14233C 100%);color:#B9CCEC;border-color:var(--ring)}
+body.dark .fortune-card, body.dark .graph-box, body.dark .timeline-box{background:#101B2E;color:var(--ink)}
+body.dark .fortune-card{border-top-color:var(--accent)}
+body.dark .f-text{color:#E0A98A}
+body.dark .q-opt{background:#15233D;color:var(--ink)}
+body.dark .f-actions button, body.dark .f-actions a.f-btn{background:#15233D;color:var(--zhihu);border-color:var(--ring)}
+body.dark .card-btn, body.dark .zf-btn, body.dark .retry{background:#15233D;color:var(--zhihu)}
+body.dark .share-box img{box-shadow:0 40px 100px -20px rgba(0,10,40,.8)}
+body.dark .ring::before{background:#101B2E}
+body.dark .zhida-box .retry{background:#15233D}
+body.dark .modal-x{color:var(--muted)}
+body.night::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1.2px 1.2px at 20% 30%, rgba(255,255,255,.5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 70% 15%, rgba(255,255,255,.38) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 45% 60%, rgba(255,255,255,.3) 50%, transparent 51%),
+    radial-gradient(1px 1px at 85% 45%, rgba(255,255,255,.45) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 10% 75%, rgba(255,255,255,.26) 50%, transparent 51%),
+    radial-gradient(1px 1px at 55% 25%, rgba(255,255,255,.4) 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 72%, rgba(255,255,255,.3) 50%, transparent 51%);
+}
+body.night footer{color:rgba(255,255,255,.6)}
 
 /* ---------- focus ---------- */
 .bubble:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -469,7 +973,12 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* ---------- mobile ---------- */
 @media (max-width:1100px){
-  .mascot{display:none}
+  .mascot-right{display:none}
+  .mascot-left{
+    width:104px;left:auto;right:18px;bottom:8px;z-index:25;
+    animation-duration:4.6s;
+  }
+  footer{padding-bottom:104px}
 }
 @media (max-width:600px){
   .panel{margin:24px 12px 40px;border-radius:14px}
@@ -479,7 +988,8 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .card h2{font-size:25px}
   #bubble-field{padding:14px 16px 24px;gap:12px}
   #stage{padding:30px 14px 60px}
-  footer{padding-bottom:40px}
+  footer{padding-bottom:96px}
+  .mascot-left{width:86px;right:10px;bottom:6px}
 }
 </style>
 </head>
@@ -487,7 +997,10 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 <main class="panel">
 <header class="hero">
-  <img class="hero-avatar" src="assets/kanshan-scarf.png" alt="刘看山头像">
+  <div class="avatar-stage" id="avatar-stage" title="连点 5 次，有彩蛋">
+    <img class="hero-avatar" src="assets/kanshan-scarf.webp" alt="刘看山头像">
+    <span class="level-badge" id="level-badge">路人</span>
+  </div>
   <div class="kicker">看山带你看老梗</div>
   <h1>知·乎·老·梗·录</h1>
   <p class="sub">
@@ -498,20 +1011,43 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </header>
 
 <div class="toolbar">
-  <button id="history-btn" type="button" aria-label="查看浏览历史" title="浏览历史">历史 <span id="history-count">0</span></button>
-  <button id="refresh" type="button" aria-label="刷新一批老梗" title="刷新一批">↻</button>
-  <button id="fortune-btn" type="button" aria-label="抽一支今日梗签" title="今日梗签">抽签</button>
+  <button id="history-btn" type="button" aria-label="查看浏览历史" title="浏览历史"><span class="nav-ico">📚</span><span class="nav-txt">历史</span><span id="history-count">0</span></button>
+  <button id="fortune-btn" type="button" aria-label="抽一支今日梗签" title="今日梗签"><span class="nav-ico">🎋</span><span class="nav-txt">抽签</span></button>
+  <button id="quiz-btn" type="button" aria-label="知乎浓度测试" title="知乎浓度测试"><span class="nav-ico">🧪</span><span class="nav-txt">浓度</span></button>
+  <button id="report-btn" type="button" aria-label="我的成就" title="我的成就"><span class="nav-ico">🏆</span><span class="nav-txt">成就</span></button>
+  <button id="favs-btn" type="button" aria-label="我的收藏" title="我的收藏"><span class="nav-ico">⭐</span><span class="nav-txt">收藏</span></button>
+  <button id="graph-btn" type="button" aria-label="梗宇宙星图" title="梗宇宙星图"><span class="nav-ico">🌌</span><span class="nav-txt">星图</span></button>
+  <button id="timeline-btn" type="button" aria-label="梗编年史" title="梗编年史"><span class="nav-ico">📜</span><span class="nav-txt">年表</span></button>
+  <button id="dark-btn" type="button" aria-label="切换深夜模式" title="深夜模式"><span class="nav-ico">🌙</span><span class="nav-txt">深夜</span></button>
+</div>
+
+<div id="daily-strip" title="看看今日梗">
+  <span class="d-label">今日梗</span>
+  <span class="d-phrase" id="daily-phrase"></span>
+  <span class="d-go">看山推荐 →</span>
 </div>
 
 <div class="reveal-desc">轻点一个气泡，它便应声而破</div>
-<div class="stars">✳ ✳ ✳</div>
 
+<button id="refresh" class="refresh-big" type="button" aria-label="换一批老梗" title="换一批老梗"><svg class="rb-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse cx="12" cy="14.6" rx="3.7" ry="4.1"/><ellipse cx="5.3" cy="10.4" rx="2" ry="2.7"/><ellipse cx="9.4" cy="6.6" rx="1.9" ry="2.5"/><ellipse cx="14.6" cy="6.6" rx="1.9" ry="2.5"/><ellipse cx="18.7" cy="10.4" rx="2" ry="2.7"/></svg></button>
 <div id="bubble-field" role="list" aria-label="知乎老梗列表"></div>
-<div id="field-empty"><img src="assets/kanshan-scarf.png" alt="">这一批的老梗都戳破啦<br>点上面的 ↻ ，再换一批</div>
+<div id="field-empty"><img src="assets/kanshan-scarf.webp" alt="">这一批的老梗都戳破啦<br>点上面的 🐾 爪印，再换一批</div>
 </main>
 
-<img class="mascot mascot-left" src="assets/kanshan-cutout.png" alt="">
-<img class="mascot mascot-right" src="assets/kanshan-cutout.png" alt="">
+<div class="mascot mascot-left" id="mascot-left" role="button" tabindex="0" aria-label="刘看山：戳戳我，会有反应" title="戳戳看山，还能拎起来">
+  <div class="mascot-shadow"></div>
+  <div class="mascot-img">
+    <img src="assets/kanshan-cutout.webp" alt="刘看山" draggable="false">
+  </div>
+  <div class="mascot-fx" aria-hidden="true"></div>
+</div>
+<div class="mascot mascot-right" id="mascot-right" role="button" tabindex="0" aria-label="刘看山：戳戳我，会有反应" title="戳戳看山，还能拎起来">
+  <div class="mascot-shadow"></div>
+  <div class="mascot-img">
+    <img src="assets/kanshan-cutout.webp" alt="刘看山" draggable="false">
+  </div>
+  <div class="mascot-fx" aria-hidden="true"></div>
+</div>
 
 <div id="stage" role="dialog" aria-live="polite" aria-label="老梗详情">
   <div class="back-row"><button id="back" type="button">← 返回</button></div>
@@ -520,7 +1056,6 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <button id="c-fav" class="card-btn fav-btn" type="button" aria-label="收藏这个梗" title="收藏">☆</button>
     <div class="h-row">
       <h2 id="c-title">谢邀，人在美国，刚下飞机</h2>
-      <span class="tag" id="c-tag">句式</span>
     </div>
     <div class="role" id="c-role"></div>
     <p class="card-desc" id="c-desc"></p>
@@ -534,9 +1069,10 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       <p class="card-sec" id="c-scene"></p>
     </div>
     <div class="sec-block" id="c-zhida-block">
-      <div class="deriv-title">知乎直答 · 实时解读<span class="live-badge"><i></i>LIVE</span></div>
+      <div class="deriv-title">知乎直答 · 实时解读<span class="live-badge"><i></i>LIVE</span><span class="zhida-flavors"><button class="zf-btn" data-flavor="old" type="button">老知乎口吻</button><button class="zf-btn" data-flavor="newbie" type="button">讲给圈外人</button></span></div>
       <div class="zhida-box" id="c-zhida"></div>
     </div>
+    <div class="sec-block" id="quick-quiz" style="display:none"></div>
     <div class="divider">— · — · — · —</div>
     <div class="deriv-title">衍生与变体</div>
     <ul class="derivs" id="c-derivs"></ul>
@@ -556,21 +1092,31 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     </div>
   </div>
   <div class="hp-tabs">
-    <button class="hp-tab active" data-tab="history" type="button">浏览历史 <span id="tab-history-count">0</span></button>
-    <button class="hp-tab" data-tab="favs" type="button">我的收藏 <span id="tab-fav-count">0</span></button>
+    <button class="hp-tab active" data-tab="history" type="button">历史 <span id="tab-history-count">0</span></button>
+    <button class="hp-tab" data-tab="favs" type="button">收藏 <span id="tab-fav-count">0</span></button>
+    <button class="hp-tab" data-tab="report" type="button">成就</button>
   </div>
   <div class="hp-sub" id="hp-sub">你戳破过的气泡，都记在这里</div>
   <ul id="history-list"></ul>
-  <div class="hp-empty" id="history-empty"><img src="assets/kanshan-scarf.png" alt=""><span id="hp-empty-text">还没有历史记录<br>回首页，戳几个气泡吧</span></div>
+  <div class="report" id="report-box" style="display:none">
+    <div class="ring" id="r-ring"><b id="r-num"></b><small>已戳破</small></div>
+    <div class="r-tier" id="r-tier"></div>
+    <div class="r-line" id="r-line"></div>
+    <div class="challenge" id="challenge-box">
+      <div class="challenge-head"><span id="challenge-title">今日挑战</span><em id="challenge-state"></em></div>
+      <div class="challenge-bar"><i id="challenge-fill"></i></div>
+      <div class="challenge-sub" id="challenge-sub"></div>
+    </div>
+  </div>
+  <div class="hp-empty" id="history-empty"><img src="assets/kanshan-scarf.webp" alt=""><span id="hp-empty-text">还没有历史记录<br>回首页，戳几个气泡吧</span></div>
 </aside>
 
 <div id="fortune-mask" class="modal-mask">
   <div class="fortune-card">
     <button id="f-close" class="modal-x" type="button" aria-label="关闭">×</button>
-    <img class="f-mascot" src="assets/kanshan-scarf.png" alt="">
+    <img class="f-mascot" src="assets/kanshan-scarf.webp" alt="">
     <div class="f-label">今 日 梗 签</div>
     <div class="f-phrase" id="f-phrase"></div>
-    <div class="f-tag" id="f-tag"></div>
     <div class="f-divider">— · — · —</div>
     <div class="f-text" id="f-text"></div>
     <div class="f-actions">
@@ -580,9 +1126,43 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
 </div>
 
+<div id="quiz-mask" class="modal-mask">
+  <div class="fortune-card quiz-card">
+    <button id="quiz-close" class="modal-x" type="button" aria-label="关闭">×</button>
+    <div id="quiz-body"></div>
+  </div>
+</div>
+
+<div id="graph-mask" class="modal-mask">
+  <div class="graph-box">
+    <button id="graph-close" class="modal-x" type="button" aria-label="关闭">×</button>
+    <div class="graph-title">梗 · 宇 宙 星 图</div>
+    <canvas id="graph-canvas" width="760" height="600"></canvas>
+    <div class="graph-hint">拖拽节点 · 空白处拖动平移 · 滚轮/双指缩放 · 悬停连线看关联 · 点节点直达详情</div>
+    <button id="graph-toggle" class="graph-toggle" type="button">显示全部节点</button>
+  </div>
+</div>
+
+<div id="timeline-mask" class="modal-mask">
+  <div class="timeline-box">
+    <button id="timeline-close" class="modal-x" type="button" aria-label="关闭">×</button>
+    <div class="graph-title">梗 · 编 年 史</div>
+    <div class="tl-scroll" id="tl-scroll"></div>
+    <div class="graph-hint">横向滑动时间轴 · 点任意梗直达详情</div>
+  </div>
+</div>
+
 <div id="share-mask" class="modal-mask">
   <div class="share-box">
     <img id="share-img" alt="分享卡片">
+    <div class="relay-box">
+      <div class="relay-input-row">
+        <input id="relay-input" type="text" maxlength="24" placeholder="接一句这个梗…" aria-label="接力台词">
+        <button id="relay-add" type="button">接龙</button>
+      </div>
+      <ul class="relay-chain" id="relay-chain"></ul>
+      <div class="relay-hint">你的接力会印在卡片上，存进本地接龙链</div>
+    </div>
     <div class="f-actions">
       <a id="share-dl" class="f-btn" download="看山老梗.png">保存图片</a>
       <button id="share-close" type="button">关闭</button>
@@ -593,453 +1173,14 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 <footer>
   看山带你看老梗 · 把知乎的暗号，讲给你听 · 以上。
+  <div class="global-stats" id="global-stats"></div>
 </footer>
+<div id="aria-live" class="sr-only" aria-live="polite"></div>
 
+<script src="memes-data.js"></script>
+<script src="memes-extra.js"></script>
 <script>
-const MEMES = [
-  {
-    phrase:"谢邀，人在美国，刚下飞机",
-    tag:"句式",
-    role:"知乎十大梗 · 装逼体开山之作",
-    desc:"知乎史上第一个用“谢邀”的用户叫 flypig——2011年1月27日，知乎上线第二天，他在回答开头写下“谢邀”，从此“答题前先谢邀”成了站内心照不宣的规矩。再后来，这句“谢邀，人在美国，刚下飞机”突然出圈，把“精英感”四个字演成了一出喜剧：答主们纷纷“刚下飞机”，仿佛机长随时在为答题紧急迫降。",
-    quote:"谢邀。\n人在美国，刚下飞机。\n家父是一名黑道大哥，在美国攻读博士后，目前就职华尔街某金融机构，日收入10万美金。",
-    derivs:[
-      {t:"谢邀，人在蒙古，刚下航母",n:"最高频的变体，把装逼推向军事化。"},
-      {t:"谢邀，人在法院，刚下法庭",n:"上海高院官方账号在回答开头这么写，官方下场玩梗。"},
-      {t:"谢邀，人在太空，刚下飞船",n:"航天员王亚平来知乎互动时的开场白。"},
-      {t:"泻药",n:"“谢邀”的谐音体，自嘲式弱化。"},
-      {t:"谢邀，人在飞机，肛下美国",n:"错别字流变体，越错越上头。"}
-    ],
-    links:[
-      {label:"「人在美国,刚下飞机」是什么梗？",url:"https://www.zhihu.com/question/322230063"},
-      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"},
-      {label:"谢邀，人在知乎，刚好十年",url:"https://zhuanlan.zhihu.com/p/344747722"}
-    ],
-    above:"flypig · 2011"
-  },
-  {
-    phrase:"先说谢邀再吹逼，人在美国刚下机",
-    tag:"打油诗",
-    role:"谢邀体全家桶 · 知乎人都会背的吐槽诗",
-    desc:"知乎人把自己平台的答题套路，写成了顺口溜——把“谢邀—吹嘘—分割线—多图预警—实名反对—匿了”的整条装逼流水线，一字不落地吐槽了个遍。高赞回复过千，评论区还跟着续写：“如此答案无人赞，知乎迟早要玩完。”",
-    quote:"先说谢邀再吹逼，人在美国刚下机。\n博士在读刚下课，勉强有空答此题。\n年薪百万算个屁，月入千万有点低。\n资料引用好几千，参考文献几十篇。\n后面加条分割线，换个话题接着编。\n多图预警发照骗，来源网络侵权删。\n实名反对高票答，怒刷一波存在感。\n圈内人多赶紧匿，以上装逼已完毕。",
-    derivs:[
-      {t:"实名反对楼上所有回答",n:"装逼流水线必备环节。"},
-      {t:"一觉醒来这么多赞，谢谢大家",n:"装逼体默认的「醒来体」。"},
-      {t:"评论区好多人在酸，信不信由你",n:"被揭穿后的标准防御话术。"}
-    ],
-    links:[
-      {label:"谢邀,人在美国,刚下飞机到底是什么梗？(原诗)",url:"https://www.zhihu.com/question/383683349/answer/1132303871"}
-    ],
-    above:"长歌 · 2020"
-  },
-  {
-    phrase:"分享你刚编的故事",
-    tag:"讽刺体",
-    role:"知乎slogan的叛逆变体",
-    desc:"知乎的官方slogan是“与世界分享你的知识、经验和见解”。可当“故事会”的味道越来越浓，网友们便把这句话拧了个个儿——“与世界分享你刚编的故事”，专用来戳穿那些一眼假的小作文。这句反讽之传神，官方自己都默认了它的存在。",
-    quote:"知乎官方：与世界分享你的知识、经验和见解。\n知乎网友：与世界分享你刚编的故事。",
-    derivs:[
-      {t:"先问是不是，再问为什么",n:"知乎十大梗之一，反驳第一原则。"},
-      {t:"逼乎 / 编乎",n:"对“知乎=故事会”的民间诨号。"}
-    ],
-    links:[
-      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
-    ],
-    above:"网友 · 2010s"
-  },
-  {
-    phrase:"吃一勺太阳会怎样",
-    tag:"脑洞",
-    role:"知乎宇宙 · 硬核科普提问体",
-    desc:"知乎独有一种提问流派：拿一个离谱得没边的假设，去问正经到极点的问题。“吃一勺太阳”“吃掉一小勺电子”“一勺中子星”“一勺真空”——每一个都能钓出大把硬核科普高赞回答。问题越离谱，回答越认真，成了知乎特有的“一本正经的荒诞”。",
-    quote:"问题：吃一小勺电子会怎样？\n高赞：你体内的分子原子都会带着电荷互相排斥，理论上整个人会瞬间“爆炸”开——但概率上讲，你根本活不到感受那一刻。",
-    derivs:[
-      {t:"一勺系列全家桶",n:"电子 / 中子星 / 太阳 / 真空，一勺走天下。"},
-      {t:"按一下按钮得100万变矮1厘米",n:"同样是脑洞提问体的名场面。"}
-    ],
-    links:[
-      {label:"李诞：知乎还有哪些类似的梗？",url:"https://www.zhihu.com/question/578481630"}
-    ],
-    above:"知乎宇宙 · 2016"
-  },
-  {
-    phrase:"追杀你的蜗牛",
-    tag:"假设题",
-    role:"知乎宇宙 · 永生追杀令",
-    desc:"知乎著名的脑洞题：如果有一只蜗牛，永远不会死，永远知道你位置，向你爬来，碰到你就死——你怎么办？引出了一整代知乎人的答案：把它锁进银行保险柜、送进火箭、雇人隔空搬运……严肃地讨论一个荒谬到极点的假设，正是知乎宇宙的浪漫。",
-    quote:"假设：一只蜗牛每天凌晨向你爬来，永远不会死，永远知道你在哪，碰到你就死。\n问题：你会怎么办？",
-    derivs:[
-      {t:"给诸葛亮一万个奥尼尔",n:"同一个脑洞宇宙里的兄弟题。"},
-      {t:"三小时以后的丧尸",n:"丧尸向的知乎原生脑洞。"}
-    ],
-    links:[
-      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
-    ],
-    above:"知乎宇宙 · 2015"
-  },
-  {
-    phrase:"实名反对楼上所有回答",
-    tag:"句式",
-    role:"知乎十大梗 · 存在感刷取术",
-    desc:"你以为你反对的是“楼上”吗？不，你反对的是整个评论区。“实名反对楼上所有回答”是一种姿态：先立flag，再输出观点，哪怕观点和楼上其实差不多。它是装逼流水线里最昂扬的一环，也是答主们怒刷存在感的保留节目。",
-    quote:"“实名反对楼上所有回答。”\n——然后，这位答主自己的回答，获得了全场最高赞。",
-    derivs:[
-      {t:"先问是不是，再问为什么",n:"反驳流派的起手式。"},
-      {t:"本人利益相关，匿了",n:"刷完存在感之后的优雅退场。"}
-    ],
-    links:[
-      {label:"知乎十大梗盘点",url:"https://zhuanlan.zhihu.com/p/337313963"}
-    ],
-    above:"知乎 · 2010s"
-  },
-  {
-    phrase:"细思极恐",
-    tag:"词语",
-    role:"知乎十大梗 · 细品之后头皮发麻",
-    desc:"“细思极恐”四个字，是知乎人给“想多了”起的学名。一个看似平平无奇的现象，经知乎er一分析，往往引向令人脊背发凉的联想——于是这四个字成了所有“细思恐极”故事的盖章。它可以是一个形容词，也可以是一种生活方式。",
-    quote:"“表面看是个暖心故事，细思极恐。”\n——知乎高赞常用句式。",
-    derivs:[
-      {t:"懂的都懂，不懂的说了你也不明白",n:"细思极恐的亲戚，加密通话式回复。"},
-      {t:"有一说一",n:"知乎式“说实话”的前缀。"}
-    ],
-    links:[
-      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
-    ],
-    above:"知乎 · 2013"
-  },
-  {
-    phrase:"知乎宇宙",
-    tag:"话题",
-    role:"知乎原生梗 · 官宣出圈",
-    desc:"2019年12月，知乎用户创建了“知乎宇宙”话题——把所有“吃一勺”“追杀你的蜗牛”“给诸葛亮一万个奥尼尔”之类的脑洞题，收进同一个宇宙。到十周年盘点时，这个话题已收录761个问题，成了知乎亲手认证的“原生梗”。",
-    quote:"知乎十年盘点：“知乎宇宙”话题已包含761个问题，拥有全网热度与知名度，是网友们喜闻乐见的知乎原生梗。",
-    derivs:[
-      {t:"镜像问题",n:"“楼上的问题换个角度再来一次”的知乎特产。"},
-      {t:"如何评价",n:"“如何评价XXX”提问体，知乎出圈句式。"}
-    ],
-    links:[
-      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"}
-    ],
-    above:"知乎宇宙 · 2019"
-  },
-  {
-    phrase:"轮带逛",
-    tag:"大V梗",
-    role:"早期知乎 · 一个人的推荐算法",
-    desc:"在知乎还没有那么懂推荐算法的年代，“轮子哥”的点赞和关注，约等于今天的时间线推荐——被他“带”到的问题，流量立刻起飞。于是“轮带逛”成了早期知乎的一种玄学：谁被轮子哥点了赞，谁就踏进了流量快车道。",
-    quote:"老知乎人才懂的梗：轮带逛、王纳米的收藏夹、魏则西事件、程浩、二十四帧事件……",
-    derivs:[
-      {t:"早期知乎大V宇宙",n:"谢熊猫君、马伯庸、采铜、葛巾、朱炫大师兄、magasa……"},
-      {t:"王纳米的收藏夹",n:"早期知乎传奇收藏夹之一。"}
-    ],
-    links:[
-      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
-    ],
-    above:"知乎 · 2012"
-  },
-  {
-    phrase:"刘看山，知乎的北极狐",
-    tag:"吉祥物",
-    role:"官方萌物 · 但总被网友玩坏",
-    desc:"刘看山是知乎的吉祥物——一只来自北极的狐狸，在企鹅的邻居里住着，本职是看山。初代设计其实是一只龇牙咧嘴的哈士奇，因“太凶”被用户抗议，才改成了今天呆萌的北极狐。它频繁出现在知乎的脑洞题里，被网友一次又一次地“玩坏”。",
-    quote:"知乎冷知识：初代刘看山是只龇着牙的哈士奇，在用户抗议“太凶”后，才改成了现在呆萌的北极狐形象。",
-    derivs:[
-      {t:"刘看山的脑洞宇宙",n:"经常在知乎脑洞题里客串主角。"},
-      {t:"看山带你看老梗",n:"本栏目，由刘看山亲自主编。"}
-    ],
-    links:[
-      {label:"关于知乎的冷知识有哪些？",url:"https://www.zhihu.com/question/1889253249913160284"}
-    ],
-    above:"知乎 · 2013"
-  },
-  {
-    phrase:"如何评价",
-    tag:"句式",
-    role:"知乎十大梗 · 出圈提问体",
-    desc:"“如何评价XXX”——这是知乎提问的标准起手式，也是火出圈的第一句式。从“如何评价《三体》”到“如何评价XX明星”，全站成千上万的问题都以这五个字开头。它甚至渗透进了现实：新闻报道里，“如何评价”成了网友围观一切大事的固定台词。",
-    quote:"“如何评价”体之魂：\n先问是不是，再问为什么，\n最后补一句：以上。",
-    derivs:[
-      {t:"XXX是什么体验",n:"与“如何评价”并称知乎两大提问公式。"},
-      {t:"有哪些XXX？",n:"知乎收藏癖提问体，一本万利。"}
-    ],
-    links:[
-      {label:"知乎十大梗盘点",url:"https://zhuanlan.zhihu.com/p/337313963"}
-    ],
-    above:"知乎 · 2010s"
-  },
-  {
-    phrase:"镜像问题",
-    tag:"句式",
-    role:"知乎十大梗 · 反手一枪",
-    desc:"知乎特有的功能催生的梗：同一个话题，反过来问一遍，就叫“镜像问题”。当有人提问“男朋友太粘人怎么办”，镜像就是“女朋友太粘人怎么办”。它既是反问的利器，也是知乎人表达“凭什么只问我这一边”的优雅方式。",
-    quote:"问题：如何看待A？\n镜像问题：如何看待非A？\n——你品，你细品。",
-    derivs:[
-      {t:"先问是不是，再问为什么",n:"反驳流的另一把枪。"},
-      {t:"这个问题我已经在镜像问过了",n:"知乎式“你问晚了”的回应。"}
-    ],
-    links:[
-      {label:"知乎十大梗盘点",url:"https://zhuanlan.zhihu.com/p/337313963"}
-    ],
-    above:"知乎 · 2011"
-  },
-  {
-    phrase:"图书馆30秒",
-    tag:"名场面",
-    role:"知乎故事 · 全网爆款",
-    desc:"知乎“故事区”的封神之作：一个女生讲述自己发现男友精神出轨的经过，用“图书馆30秒”这个细节，把亲密关系里最微妙的信任崩塌写得入木三分。这篇回答火遍全网，被无数人转发——“图书馆30秒”四个字，从此成了“心寒瞬间”的代名词。",
-    quote:"知乎高赞故事“图书馆30秒”，让无数人看完沉默。\n细节，往往比结局更致命。",
-    derivs:[
-      {t:"一觉醒来，赞同破万",n:"知乎爆款故事的标配开场白。"},
-      {t:"与世界分享你刚编的故事",n:"真故事和编故事，在这一刻难以分辨。"}
-    ],
-    links:[
-      {label:"最近几年有哪些知乎社区的原生梗？",url:"https://www.zhihu.com/question/605267605"}
-    ],
-    above:"知乎 · 2021"
-  },
-  {
-    phrase:"一觉醒来",
-    tag:"口头禅",
-    role:"知乎爆款 · 标准开场白",
-    desc:"“一觉醒来，竟然这么多人赞”——这是知乎回答的经典开场白。答主睡觉，赞数暴涨，醒来受宠若惊。配合“第一次回答没想到这个待遇”“评论区好多人在酸”使用，风味更佳。它既是一种惊喜，也是一种知乎式的低调炫耀。",
-    quote:"一觉醒来，竟然这么多人赞。\n第一次回答没想到这个待遇，谢谢大家！",
-    derivs:[
-      {t:"泻药，人在美国，刚下飞机",n:"同一个装逼宇宙里的邻居。"},
-      {t:"评论区好多人在酸",n:"醒来之后的防御姿态。"}
-    ],
-    links:[
-      {label:"「人在美国,刚下飞机」是什么梗？",url:"https://www.zhihu.com/question/322230063"}
-    ],
-    above:"知乎 · 2010s"
-  },
-  {
-    phrase:"懂的都懂",
-    tag:"口头禅",
-    role:"知乎黑话 · 加密通话",
-    desc:"“懂的都懂，不懂的说了你也不明白。”——这是知乎人用来堵住所有追问的神句。它既是一种傲慢，也是一种保护：有些事情，点到为止；有些圈子，只进不出。配合“利益相关，匿了”使用，堪称加密通话之王。",
-    quote:"懂的都懂，不懂的说了你也不明白。\n利益相关，匿了。",
-    derivs:[
-      {t:"利益相关",n:"知乎声明利益关系的万能前缀。"},
-      {t:"匿了",n:"说完就跑，不给评论留机会。"}
-    ],
-    links:[
-      {label:"「人在美国,刚下飞机」到底是什么梗？",url:"https://www.zhihu.com/question/383683349"}
-    ],
-    above:"知乎 · 2015"
-  },
-  {
-    phrase:"吃一小勺电子会怎样",
-    tag:"脑洞",
-    role:"知乎宇宙 · 一勺系列",
-    desc:"“吃一小勺电子”“吃一小勺太阳”“一勺中子星”——知乎最著名的脑洞提问系列。每一个“一勺”，都能钓出核物理、天体物理、材料科学的大佬们一本正经地计算。荒诞的提问配上严谨的回答，是知乎宇宙最迷人的风景。",
-    quote:"问题：吃一小勺电子会怎样？\n回答：你整个人会带着电荷瞬间“爆炸”——当然，你活不到那一刻。",
-    derivs:[
-      {t:"一勺太阳",n:"同一个系列里的另一个爆款。"},
-      {t:"一勺中子星",n:"重量级选手，密度顶到天花板。"}
-    ],
-    links:[
-      {label:"李诞：知乎还有哪些类似的梗？",url:"https://www.zhihu.com/question/578481630"}
-    ],
-    above:"知乎宇宙 · 2016"
-  },
-  {
-    phrase:"给诸葛亮一万个奥尼尔",
-    tag:"假设题",
-    role:"知乎宇宙 · 穿越战争模拟",
-    desc:"知乎脑洞题的巅峰：如果给诸葛亮一万个奥尼尔，能北伐成功吗？这个问题的精妙之处在于，它把历史、体育、物理、军事策略搅在一起，让各路答主从“奥尼尔能不能越过蜀道”聊到“古代军队如何给奥尼尔供饭”。一本正经地荒谬，就是知乎宇宙的意义。",
-    quote:"假设：给诸葛亮一万个奥尼尔，北伐能成吗？\n结论：取决于奥尼尔能不能在蜀道里生存。",
-    derivs:[
-      {t:"追杀你的蜗牛",n:"同一个脑洞宇宙的兄弟题。"},
-      {t:"三小时以后的丧尸",n:"丧尸向的知乎原生脑洞。"}
-    ],
-    links:[
-      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
-    ],
-    above:"知乎宇宙 · 2017"
-  },
-  {
-    phrase:"王纳米的收藏夹",
-    tag:"大V梗",
-    role:"早期知乎 · 收藏夹传说",
-    desc:"在收藏功能还很新潮的年代，知乎有个账号叫“王纳米”，它的收藏夹成了一个传奇——里面搜罗了全站最精的干货、最神的回答、最好玩的脑洞。早期知乎er把它当成“必逛榜单”，点开一个收藏夹，就像打开了一整年的知乎精选。",
-    quote:"老知乎人才懂的梗：\n轮带逛、王纳米的收藏夹、魏则西事件、程浩……",
-    derivs:[
-      {t:"轮带逛",n:"同一个大V时代的产物。"},
-      {t:"早期知乎大V宇宙",n:"谢熊猫君、马伯庸、采铜……"}
-    ],
-    links:[
-      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
-    ],
-    above:"知乎 · 2012"
-  },
-  {
-    phrase:"小透明",
-    tag:"自嘲",
-    role:"知乎十大梗 · 受宠若惊",
-    desc:"“小透明”是知乎人对自己的自嘲：在站内不活跃、赞数寥寥、存在感约等于零。可一旦“一觉醒来赞同破万”，小透明立刻受宠若惊——这是知乎最经典的“平凡人惊喜”叙事，也是无数新人答主的起点。",
-    quote:"一觉醒来，赞同破万，小透明受宠若惊。",
-    derivs:[
-      {t:"一觉醒来",n:"小透明的标配剧情。"},
-      {t:"以上。",n:"说完就撤，保持低调。"}
-    ],
-    links:[
-      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
-    ],
-    above:"知乎 · 2010s"
-  },
-  {
-    phrase:"先问是不是，再问为什么",
-    tag:"句式",
-    role:"知乎十大梗 · 反驳第一原则",
-    desc:"知乎讨论区的“宪法第一条”：任何“为什么”之前，先问“是不是”。面对预设了错误前提的提问，知乎人用它一键拆台。它代表了早期知乎对“先核实、再讨论”的执拗，也是知乎官方十周年盖章的十大梗之一。",
-    quote:"问：为什么程序员都爱穿格子衫？\n高赞：先问是不是，再问为什么。",
-    derivs:[
-      {t:"如何评价",n:"与它并称知乎两大出圈句式。"},
-      {t:"镜像问题",n:"反驳流的另一件武器。"},
-      {t:"抛开事实不谈",n:"它的反义词，抬杠起手式。"}
-    ],
-    links:[
-      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"}
-    ],
-    above:"知乎 · 2011"
-  },
-  {
-    phrase:"以上。",
-    tag:"口头禅",
-    role:"知乎十大梗 · 收尾的仪式感",
-    desc:"一个句号都不多给的收尾词。“以上”本是公文与电报用语，被知乎答主拿来给长篇大论画句号——言尽于此，恕不奉陪。它入选知乎官方十大梗，也是辨认老知乎的身份证。",
-    quote:"……（洋洋洒洒三千字）\n以上。",
-    derivs:[
-      {t:"谢邀",n:"开头谢邀、结尾以上，流程闭环。"},
-      {t:"利益相关，匿了",n:"说完就跑的另一种收尾。"}
-    ],
-    links:[
-      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"}
-    ],
-    above:"知乎 · 2011"
-  },
-  {
-    phrase:"利益相关，匿了",
-    tag:"口头禅",
-    role:"免责声明 · 加密通话收尾",
-    desc:"当回答涉及行业内幕、公司评价或争议话题，答主会先声明“利益相关”以示中立，然后点开匿名——既表明了立场，又保护了马甲。后来它被广泛用于一切“我说了，但你别问我是谁”的场合。",
-    quote:"利益相关：行业从业者。\n匿了。",
-    derivs:[
-      {t:"懂的都懂",n:"加密通话两件套的另一半。"},
-      {t:"评论区好多人在酸",n:"匿名之后的常见防御。"}
-    ],
-    links:[
-      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
-    ],
-    above:"知乎 · 2012"
-  },
-  {
-    phrase:"多图预警，来源网络，侵权删",
-    tag:"句式",
-    role:"搬运工的自我修养",
-    desc:"贴图回答的标准三件套：“多图预警”提醒流量党，“来源网络”声明非原创，“侵权删”预留退路。原本是礼貌提醒，后来因为表情包合集、影视截图回答泛滥，成了“我是搬运工”的官方认证。",
-    quote:"多图预警！！！\n（五十张表情包）\n来源网络，侵权删。",
-    derivs:[
-      {t:"流量党慎入",n:"预警体的亲戚。"},
-      {t:"先马后看",n:"看到长文长图的配套动作。"}
-    ],
-    links:[
-      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
-    ],
-    above:"知乎 · 2013"
-  },
-  {
-    phrase:"抖机灵",
-    tag:"词语",
-    role:"段子手的生存之道",
-    desc:"在严肃问题下面讲个俏皮段子，不求信息量但求好笑——这就是“抖机灵”。知乎早期对它又爱又恨：爱它盘活气氛，恨它挤占干货。如今“抖机灵”已自我转正，成为一种被默许的回答流派。",
-    quote:"问：如何优雅地回应催婚？\n抖机灵版：已阅，下一个。",
-    derivs:[
-      {t:"干货",n:"抖机灵官方反义词。"},
-      {t:"认真你就输了",n:"机灵党的护身符。"}
-    ],
-    links:[
-      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
-    ],
-    above:"知乎 · 2012"
-  },
-  {
-    phrase:"挖坑不填 · 占坑",
-    tag:"行为",
-    role:"预告党的鸽学修养",
-    desc:"“占坑”是先留一句“回头细说”抢占答题位；“挖坑不填”是承诺了更新却再无下文。两者合称知乎鸽学双璧——评论区里催更的“楼主还在吗”，往往是比正文更热闹的风景。",
-    quote:"先占个坑，周末详细写。\n——该回答最后编辑于 9 年前",
-    derivs:[
-      {t:"太监了",n:"挖坑不填的更直白说法。"},
-      {t:"催更",n:"评论区固定节目。"}
-    ],
-    links:[
-      {label:"有哪些老知乎才知道的梗？",url:"https://www.zhihu.com/question/664363385"}
-    ],
-    above:"知乎 · 2012"
-  },
-  {
-    phrase:"王路飞，一人分饰244角",
-    tag:"事件",
-    role:"知乎故事会 · 传奇反面教材",
-    desc:"知乎用户“王路飞”在站内一人分饰244个角色：时而是宇航员，时而是医生，时而是海外华侨——每个身份都写得有鼻子有眼。被平台核实封号后，他成了“分享你刚编的故事”最著名的人形注脚。",
-    quote:"他的回答横跨几十个行业，\n每一段人生都栩栩如生，\n只是都发生在同一个人身上。",
-    derivs:[
-      {t:"与世界分享你刚编的故事",n:"王路飞是这句话最好的注解。"},
-      {t:"知乎故事会",n:"因这类事件得名。"}
-    ],
-    links:[
-      {label:"有哪些出自知乎的名梗？",url:"https://www.zhihu.com/question/1899419920225264094"}
-    ],
-    above:"知乎 · 2017"
-  },
-  {
-    phrase:"贵乎药丸",
-    tag:"自嘲",
-    role:"爱之深 · 黑之切",
-    desc:"“贵乎”是调侃式敬称，“药丸”谐音“要完”。每当广告变多、内容下沉、审核抽风，评论区就会整齐刷起“贵乎药丸”。它是知乎用户表达不满的固定句式，也是爱得深沉的证明——真不关心的人，连黑都懒得黑。",
-    quote:"看到首页全是软广的那天，\n我默默打出四个字：贵乎药丸。",
-    derivs:[
-      {t:"编乎 / 逼乎",n:"同款民间诨号。"},
-      {t:"与世界分享你刚编的故事",n:"药丸的主要病因。"}
-    ],
-    links:[
-      {label:"最近几年有哪些知乎社区的原生梗？",url:"https://www.zhihu.com/question/605267605"}
-    ],
-    above:"知乎 · 2016"
-  },
-  {
-    phrase:"强答一波 · 不请自来",
-    tag:"口头禅",
-    role:"没受邀也要聊两句",
-    desc:"知乎本是邀请制答题文化，没被邀请的人想说话，只好先自我解嘲一句“不请自来，强答一波”。如今邀请机制早已淡化，这句话退化成纯粹的开场客套，约等于“我就随便说说，你们随便听听”。",
-    quote:"不请自来，强答一波。\n说得不对的地方，评论区轻喷。",
-    derivs:[
-      {t:"谢邀",n:"受邀者的开场，正好相反。"},
-      {t:"泻药",n:"谐音版开场白。"}
-    ],
-    links:[
-      {label:"「人在美国,刚下飞机」是什么梗？",url:"https://www.zhihu.com/question/322230063"}
-    ],
-    above:"知乎 · 2013"
-  },
-  {
-    phrase:"年薪百万是什么体验",
-    tag:"提问体",
-    role:"体验流 · 凡尔赛重灾区",
-    desc:"“XX 是什么体验”本是知乎最有想象力的提问体，让普通人得以窥见另一种人生。但“年薪百万”“考上清华”“住着别墅”类问题下的浮夸回答实在太多，让这个句式成了“知乎人均百万”刻板印象的源头之一。",
-    quote:"问：年薪百万是什么体验？\n答：谢邀，人在美国，刚下飞机。",
-    derivs:[
-      {t:"如何评价",n:"两大提问公式之一。"},
-      {t:"谢邀体",n:"体验问题下的标配回答。"}
-    ],
-    links:[
-      {label:"知乎十年盘点：十大知乎梗",url:"https://zhuanlan.zhihu.com/p/337313963"}
-    ],
-    above:"知乎 · 2012"
-  }
-];
+
 
 /* 增强资料：来龙去脉(o) / 使用场景(s) / 衍生链接(du，与 derivs 顺序对应) */
 const ZS = q => 'https://www.zhihu.com/search?type=content&q=' + encodeURIComponent(q);
@@ -1140,6 +1281,9 @@ const EXTRA = {
     du:[ZS("一觉醒来这么多赞"),ZS("以上 知乎 结尾")]
   }
 };
+
+/* 100 条全量扩写（来龙去脉 + 使用场景），由 DeepSeek 基于各梗资料生成 */
+Object.assign(EXTRA, MEME_EXTRA);
 
 /* 丰富版资料（覆盖/补充 EXTRA）：内容经知乎直答考证 */
 Object.assign(EXTRA, {
@@ -1348,11 +1492,17 @@ function saveFavs(){
 }
 function isFav(m){ return favs.some(f => f.phrase === m.phrase); }
 function toggleFav(m){
-  if(isFav(m)) favs = favs.filter(f => f.phrase !== m.phrase);
-  else favs.unshift({phrase:m.phrase, tag:m.tag, time:Date.now()});
+  const adding = !isFav(m);
+  if(adding) favs.unshift({phrase:m.phrase, time:Date.now()});
+  else favs = favs.filter(f => f.phrase !== m.phrase);
   saveFavs();
   updateFavBtn(m);
   if(body.classList.contains('history-open')) renderDrawer();
+  if(adding){
+    addAff(2, '收藏新梗');
+    spawnFx(LEFT_MC, ['💖','⭐']);
+    if(daily && daily.taskId === 't2'){ daily.favs++; bumpDaily(); }
+  }
 }
 function updateFavBtn(m){
   const b = $('c-fav');
@@ -1364,10 +1514,19 @@ function updateFavBtn(m){
   b.classList.add('pop');
 }
 function addToHistory(m){
+  const isNew = !history.some(h => h.phrase === m.phrase);
   history = history.filter(h => h.phrase !== m.phrase);
-  history.unshift({phrase:m.phrase, tag:m.tag, time:Date.now()});
+  history.unshift({phrase:m.phrase, time:Date.now()});
   if(history.length > 50) history.length = 50;
   saveHistory();
+  trackView(m.phrase);
+  if(isNew){
+    addAff(1, '看了新梗');
+    if(daily && daily.taskId === 't1' && !daily.seen.includes(m.phrase)){
+      daily.seen.push(m.phrase);
+      bumpDaily();
+    }
+  }
 }
 function fmtTime(t){
   const d = new Date(t), p = n => String(n).padStart(2, '0');
@@ -1375,13 +1534,25 @@ function fmtTime(t){
 }
 let drawerTab = 'history';
 function renderDrawer(){
+  const isReport = drawerTab === 'report';
+  const ul = $('history-list');
+  const box = $('report-box');
+  if(isReport){
+    $('hp-sub').textContent = '看山给你的梗学成绩单';
+    ul.style.display = 'none';
+    $('history-empty').style.display = 'none';
+    box.style.display = 'block';
+    fillReport();
+    return;
+  }
+  box.style.display = 'none';
+  ul.style.display = '';
   const isFavTab = drawerTab === 'favs';
   const items = isFavTab ? favs : history;
   $('hp-sub').textContent = isFavTab ? '你收进档案袋的老梗，都在这里' : '你戳破过的气泡，都记在这里';
   $('hp-empty-text').innerHTML = isFavTab
     ? '还没有收藏<br>戳开气泡，点卡片右上角的 ☆ 收进来'
     : '还没有历史记录<br>回首页，戳几个气泡吧';
-  const ul = $('history-list');
   ul.innerHTML = '';
   items.forEach((h, idx)=>{
     const li = document.createElement('li');
@@ -1392,11 +1563,8 @@ function renderDrawer(){
     phrase.textContent = h.phrase;
     const meta = document.createElement('span');
     meta.className = 'hp-meta';
-    const em = document.createElement('em');
-    em.textContent = h.tag;
     const time = document.createElement('time');
     time.textContent = fmtTime(h.time);
-    meta.appendChild(em);
     meta.appendChild(time);
     li.appendChild(phrase);
     li.appendChild(meta);
@@ -1414,9 +1582,15 @@ function renderDrawer(){
 }
 function openHistory(){
   renderDrawer();
-  body.classList.add('history-open');
+  openModal('history-open');
 }
-function closeHistory(){ body.classList.remove('history-open'); }
+function openDrawerTab(tab){
+  drawerTab = tab;
+  document.querySelectorAll('.hp-tab').forEach(x=>x.classList.toggle('active', x.dataset.tab === tab));
+  renderDrawer();
+  openModal('history-open');
+}
+function closeHistory(){ closeModal('history-open'); }
 
 let currentMeme = null;
 
@@ -1441,9 +1615,9 @@ function openLinkedMeme(m2){
 }
 
 function fillCard(m){
+  kanshanTip('open', '点开的气泡会记进你的历史，全网都在戳哦～', 900);
   currentMeme = m;
   $('c-title').textContent = m.phrase;
-  $('c-tag').textContent = m.tag;
   $('c-role').textContent = m.role;
   $('c-desc').textContent = m.desc;
   const q = $('c-quote');
@@ -1492,18 +1666,22 @@ function fillCard(m){
   });
   const lk = $('c-links');
   lk.innerHTML = '';
-  m.links.forEach(l=>{
-    const a = document.createElement('a');
-    a.className = 'src';
-    a.href = l.url;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.textContent = l.label;
-    lk.appendChild(a);
-  });
+  if(m.links && m.links.length){
+    m.links.forEach(l=>{
+      const a = document.createElement('a');
+      a.className = 'src';
+      a.href = l.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = l.label;
+      lk.appendChild(a);
+    });
+  }
   $('c-above').textContent = m.above;
   updateFavBtn(m);
   fetchZhida(m.phrase);
+  renderQuickQuiz(m);
+  startDanmaku();
 }
 
 /* ---------- 知乎直答 · 实时解读（不缓存，每次打开实时请求） ---------- */
@@ -1517,13 +1695,14 @@ function renderZhidaText(t){
     .replace(/\n/g, '<br>');
 }
 
-async function fetchZhida(phrase){
+async function fetchZhida(phrase, flavor){
   const box = $('c-zhida');
   if(zhidaCtrl) zhidaCtrl.abort();
   const ctrl = new AbortController();
   zhidaCtrl = ctrl;
   box.innerHTML = '<span class="zhida-loading">看山正在替你联网问知乎直答</span>';
-  const q = '「' + phrase + '」是什么梗？请用150字左右介绍它的来源背景、含义和现在的使用场景';
+  thinkBubble(true);
+  const q = '「' + phrase + '」是什么梗？请用150字左右介绍它的来源背景、含义和现在的使用场景' + (flavor || '');
   try{
     const res = await fetch('/api/zhida?q=' + encodeURIComponent(q), {signal: ctrl.signal, cache: 'no-store'});
     if(!res.ok || !res.body){
@@ -1544,7 +1723,10 @@ async function fetchZhida(phrase){
       box.innerHTML = renderZhidaText(text);
     }
     if(!text.trim()) throw new Error('empty');
+    thinkBubble(false);
+    setMood(LEFT_MC, 'happy', 550);
   }catch(e){
+    thinkBubble(false);
     if(e.name === 'AbortError') return;
     box.innerHTML = '';
     const tip = document.createElement('div');
@@ -1590,8 +1772,15 @@ function burst(bubble){
 }
 
 function openBubble(el, i){
+  if(bubbleSuppress){ bubbleSuppress = false; return; }
   const m = queue[i];
+  if(!m) return;
+  popSound();
+  trackCombo(el);
   burst(el);
+  mascots.forEach(mc=> setMood(mc, 'happy', 650));
+  spawnFx(LEFT_MC, ['✨','⭐']);
+  savedScroll = window.scrollY;
   setTimeout(()=>{
     el.remove();
     if(!queue[i]) return;
@@ -1613,6 +1802,10 @@ function render(){
     b.type = 'button';
     b.setAttribute('role', 'listitem');
     b.textContent = m.phrase;
+    b._meme = m;
+    const tipText = TIPS[m.phrase] || m.role || '';
+    b.dataset.tip = tipText.length > 20 ? tipText.slice(0, 20) + '…' : tipText;
+    if(history.some(h => h.phrase === m.phrase)) b.classList.add('read');
     b.style.animationDelay = (0.05 + i * 0.06) + 's';
     b.addEventListener('click', ()=> openBubble(b, i));
     field.appendChild(b);
@@ -1628,6 +1821,8 @@ function goBack(){
   if(!body.classList.contains('detail-open')) return;
   body.classList.remove('detail-open');
   if(queue.filter(Boolean).length === 0) body.classList.add('empty');
+  stopDanmaku();
+  requestAnimationFrame(()=> window.scrollTo({top: savedScroll}));
 }
 
 function refresh(){
@@ -1635,7 +1830,10 @@ function refresh(){
   body.classList.remove('detail-open', 'empty');
   render();
   refreshBtn.classList.add('spinning');
-  setTimeout(()=> refreshBtn.classList.remove('spinning'), 500);
+  setTimeout(()=> refreshBtn.classList.remove('spinning'), 1200);
+  mascots.forEach(mc=> setMood(mc, 'dizzy', 850));
+  spawnFx(LEFT_MC, ['🌀']);
+  if(Math.random() < 0.35) kanshanSay(LEFT_MC, '呼——换了一批新气泡，我转个圈先。');
 }
 
 backBtn.addEventListener('click', goBack);
@@ -1661,11 +1859,16 @@ document.querySelectorAll('.hp-tab').forEach(t=>{
     renderDrawer();
   });
 });
+$('report-btn').addEventListener('click', ()=> openDrawerTab('report'));
+$('favs-btn').addEventListener('click', ()=> openDrawerTab('favs'));
 $('c-fav').addEventListener('click', ()=>{ if(currentMeme) toggleFav(currentMeme); });
 document.addEventListener('keydown', e=>{
   if(e.key === 'Escape'){
-    if(body.classList.contains('share-open')) body.classList.remove('share-open');
-    else if(body.classList.contains('fortune-open')) body.classList.remove('fortune-open');
+    if(body.classList.contains('share-open')) closeModal('share-open');
+    else if(body.classList.contains('quiz-open')) closeModal('quiz-open');
+    else if(body.classList.contains('graph-open')){ stopGraph(); closeModal('graph-open'); }
+    else if(body.classList.contains('timeline-open')) closeModal('timeline-open');
+    else if(body.classList.contains('fortune-open')) closeModal('fortune-open');
     else if(body.classList.contains('history-open')) closeHistory();
     else goBack();
   }
@@ -1680,7 +1883,6 @@ function drawFortune(){
   const yi = FORTUNE_YI[Math.floor(Math.random() * FORTUNE_YI.length)];
   const ji = FORTUNE_JI[Math.floor(Math.random() * FORTUNE_JI.length)];
   $('f-phrase').textContent = fortuneMeme.phrase;
-  $('f-tag').textContent = fortuneMeme.tag;
   const ft = $('f-text');
   ft.innerHTML = '';
   const b1 = document.createElement('b'); b1.textContent = yi;
@@ -1688,15 +1890,24 @@ function drawFortune(){
   ft.appendChild(b1);
   ft.appendChild(document.createTextNode('　'));
   ft.appendChild(b2);
-  body.classList.add('fortune-open');
+  const fm = document.querySelector('.f-mascot');
+  if(fm){
+    fm.classList.remove('f-shake');
+    void fm.offsetWidth;
+    fm.classList.add('f-shake');
+  }
+  openModal('fortune-open');
 }
-$('fortune-btn').addEventListener('click', drawFortune);
+$('fortune-btn').addEventListener('click', ()=>{
+  kanshanTip('fortune', '抽一支今日梗签，宜忌都写在签上～');
+  drawFortune();
+});
 $('f-again').addEventListener('click', drawFortune);
-$('f-close').addEventListener('click', ()=> body.classList.remove('fortune-open'));
-$('fortune-mask').addEventListener('click', e=>{ if(e.target.id === 'fortune-mask') body.classList.remove('fortune-open'); });
+$('f-close').addEventListener('click', ()=> closeModal('fortune-open'));
+$('fortune-mask').addEventListener('click', e=>{ if(e.target.id === 'fortune-mask') closeModal('fortune-open'); });
 $('f-open').addEventListener('click', ()=>{
   if(!fortuneMeme) return;
-  body.classList.remove('fortune-open');
+  closeModal('fortune-open');
   addToHistory(fortuneMeme);
   body.classList.add('detail-open');
   fillCard(fortuneMeme);
@@ -1732,7 +1943,7 @@ function loadImg(src){
     i.src = src;
   });
 }
-async function genShareCard(m){
+async function genShareCard(m, relay){
   await document.fonts.ready;
   const W = 900;
   const meas = document.createElement('canvas').getContext('2d');
@@ -1745,8 +1956,14 @@ async function genShareCard(m){
     meas.font = '400 23px "Noto Sans SC", sans-serif';
     qlines = wrapLines(meas, m.quote, W - 230).slice(0, 4);
   }
+  let relayLines = [];
+  if(relay){
+    meas.font = '400 20px "Noto Sans SC", sans-serif';
+    relayLines = wrapLines(meas, '接龙 · ' + relay, W - 220).slice(0, 2);
+  }
+  const rlh = relayLines.length ? relayLines.length * 30 + 40 : 0;
   const qh = qlines.length ? qlines.length * 40 + 36 : 0;
-  const contentEnd = 386 + dlines.length * 44 + 18 + qh;
+  const contentEnd = 386 + dlines.length * 44 + 18 + qh + rlh;
   const H = Math.max(contentEnd + 240, 780);
 
   const cv = document.createElement('canvas');
@@ -1768,14 +1985,15 @@ async function genShareCard(m){
   plines.forEach((l, i)=> ctx.fillText(l, W / 2, 152 + i * 66));
   let y = 306;
   ctx.font = '600 20px "Noto Sans SC", sans-serif';
-  const tw = ctx.measureText(m.tag).width;
+  const badgeText = m.phrase.length > 10 ? m.phrase.slice(0, 10) + '…' : m.phrase;
+  const tw = ctx.measureText(badgeText).width;
   ctx.fillStyle = '#EBF3FF';
   roundRect(ctx, W / 2 - tw / 2 - 20, y, tw + 40, 38, 19);
   ctx.fill();
   ctx.strokeStyle = '#C4DAFF';
   ctx.stroke();
   ctx.fillStyle = '#0066FF';
-  ctx.fillText(m.tag, W / 2, y + 27);
+  ctx.fillText(badgeText, W / 2, y + 27);
   y += 80;
   ctx.textAlign = 'left';
   ctx.fillStyle = '#3A4657';
@@ -1794,9 +2012,20 @@ async function genShareCard(m){
     ctx.fillStyle = '#33507A';
     ctx.font = '400 23px "Noto Sans SC", sans-serif';
     qlines.forEach((l, i)=> ctx.fillText(l, 112, y + 46 + i * 40));
+    y += qh + 16;
+  }
+  if(relayLines.length){
+    ctx.strokeStyle = 'rgba(0,102,255,.4)';
+    ctx.setLineDash([6, 5]);
+    roundRect(ctx, 80, y, W - 160, rlh - 12, 12);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#0066FF';
+    ctx.font = '600 20px "Noto Sans SC", sans-serif';
+    relayLines.forEach((l, i)=> ctx.fillText(l, 100, y + 30 + i * 30));
   }
   try{
-    const img = await loadImg('assets/kanshan-cutout.png');
+    const img = await loadImg('assets/kanshan-cutout.webp');
     const mh = 220, mw = mh * img.width / img.height;
     ctx.drawImage(img, W - mw - 50, H - mh - 30, mw, mh);
   }catch(e){}
@@ -1815,24 +2044,1483 @@ $('c-share').addEventListener('click', async ()=>{
   const btn = $('c-share');
   btn.textContent = '…';
   try{
-    const url = await genShareCard(currentMeme);
+    const url = await genShareCard(currentMeme, relayFor(currentMeme));
     $('share-img').src = url;
     $('share-dl').href = url;
     $('share-dl').download = '看山老梗-' + currentMeme.phrase.slice(0, 10) + '.png';
-    body.classList.add('share-open');
+    renderRelayChain(currentMeme);
+    openModal('share-open');
   }finally{
     btn.textContent = '⤴';
     sharing = false;
   }
 });
-$('share-close').addEventListener('click', ()=> body.classList.remove('share-open'));
-$('share-mask').addEventListener('click', e=>{ if(e.target.id === 'share-mask') body.classList.remove('share-open'); });
+$('share-close').addEventListener('click', ()=> closeModal('share-open'));
+$('share-mask').addEventListener('click', e=>{ if(e.target.id === 'share-mask') closeModal('share-open'); });
+$('relay-add').addEventListener('click', async ()=>{
+  const inp = $('relay-input');
+  const v = inp.value.trim();
+  if(!v || !currentMeme || sharing) return;
+  affection.relay = affection.relay || [];
+  affection.relay.unshift({phrase: currentMeme.phrase, line: v, time: Date.now()});
+  if(affection.relay.length > 30) affection.relay.length = 30;
+  saveAff();
+  inp.value = '';
+  renderRelayChain(currentMeme);
+  sharing = true;
+  try{
+    const url = await genShareCard(currentMeme, relayFor(currentMeme));
+    $('share-img').src = url;
+    $('share-dl').href = url;
+  }finally{
+    sharing = false;
+  }
+  announce('接力成功，已经印在卡片上');
+});
+
+/* ---------- 气泡速读 tips ---------- */
+const TIPS = {
+  "谢邀，人在美国，刚下飞机":"装逼体开山之作",
+  "先说谢邀再吹逼，人在美国刚下机":"知乎人都会背的吐槽诗",
+  "分享你刚编的故事":"官方slogan的叛逆变体",
+  "吃一勺太阳会怎样":"一本正经的荒诞",
+  "追杀你的蜗牛":"永生追杀令",
+  "实名反对楼上所有回答":"存在感刷取术",
+  "细思极恐":"越想越头皮发麻",
+  "知乎宇宙":"官方认证的脑洞合集",
+  "轮带逛":"一个人的推荐算法",
+  "刘看山，知乎的北极狐":"官方萌物，总被玩坏",
+  "如何评价":"出圈提问体",
+  "镜像问题":"反手一枪",
+  "图书馆30秒":"心寒瞬间的代名词",
+  "一觉醒来":"爆款标准开场白",
+  "懂的都懂":"加密通话之王",
+  "吃一小勺电子会怎样":"一勺系列开山之作",
+  "给诸葛亮一万个奥尼尔":"穿越战争模拟",
+  "王纳米的收藏夹":"收藏夹传说",
+  "小透明":"受宠若惊体质",
+  "先问是不是，再问为什么":"反驳第一原则",
+  "以上。":"收尾的仪式感",
+  "利益相关，匿了":"加密通话收尾",
+  "多图预警，来源网络，侵权删":"搬运工的自我修养",
+  "抖机灵":"段子手的生存之道",
+  "挖坑不填 · 占坑":"知乎鸽学双璧",
+  "王路飞，一人分饰244角":"故事会反面教材",
+  "贵乎药丸":"爱之深，黑之切",
+  "强答一波 · 不请自来":"没受邀也要聊两句",
+  "年薪百万是什么体验":"凡尔赛重灾区",
+  "刘看山其实是只哈士奇":"设计师的黑历史"
+};
+
+/* ---------- 每日一梗 ---------- */
+const dailyMeme = MEMES[Math.floor(Date.now() / 86400000) % MEMES.length];
+$('daily-phrase').textContent = dailyMeme.phrase;
+$('daily-strip').addEventListener('click', ()=>{
+  addToHistory(dailyMeme);
+  body.classList.add('detail-open');
+  fillCard(dailyMeme);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+});
+
+/* ---------- 看山吐槽 ---------- */
+const KANSHAN_SAYS = [
+  "谢邀，人在气泡堆，刚被戳醒。",
+  "这个梗我熟，当年我还围观过。",
+  "别光看我，戳气泡去。",
+  "以上。",
+  "细思极恐：你已经看了很久了。",
+  "听说连戳五个气泡有惊喜。",
+  "我祖上其实是只哈士奇……嘘。",
+  "贵乎药丸？我看还能再战十年。",
+  "懂的都懂。",
+  "今日宜：看老梗。忌：不看老梗。",
+  "轮带逛的年代，我还没出生。",
+  "「图书馆30秒」，看一次沉默一次。",
+  "我和那只蜗牛赛跑过，我赢了。",
+  "这些暗号，我都替你记着呢。",
+  "多点五次我的头像，有东西给你看。"
+];
+let sayTimer = null;
+function kanshanSay(anchor, text){
+  document.querySelectorAll('.kanshan-say').forEach(x=>x.remove());
+  const r = anchor.getBoundingClientRect();
+  const div = document.createElement('div');
+  div.className = 'kanshan-say';
+  const full = text || KANSHAN_SAYS[Math.floor(Math.random() * KANSHAN_SAYS.length)];
+  document.body.appendChild(div);
+  div.textContent = full;
+  const finalH = div.offsetHeight;
+  div.textContent = '';
+  div.style.left = Math.min(Math.max(r.left + r.width / 2 - 110, 12), innerWidth - 250) + 'px';
+  div.style.top = Math.max(r.top - finalH - 6, 8) + 'px';
+  const caret = document.createElement('span');
+  caret.className = 'caret';
+  let i = 0;
+  const type = setInterval(()=>{
+    i++;
+    div.textContent = full.slice(0, i);
+    div.appendChild(caret);
+    if(i >= full.length){
+      clearInterval(type);
+      caret.remove();
+    }
+  }, 38);
+  clearTimeout(sayTimer);
+  sayTimer = setTimeout(()=>{
+    clearInterval(type);
+    div.remove();
+  }, Math.max(3400, full.length * 38 + 900));
+}
+
+/* ---------- 看山引擎：会呼吸、会看人、会犯困、能被拎起来 ---------- */
+const mascots = [...document.querySelectorAll('.mascot')];
+const LEFT_MC = document.getElementById('mascot-left');
+const RIGHT_MC = document.getElementById('mascot-right');
+const FX_EMOJIS = ['✨','💖','❄️','⭐','💙','🎉','🦊'];
+
+function spawnFx(mc, emojis){
+  const fx = mc && mc.querySelector('.mascot-fx');
+  if(!fx) return;
+  (emojis || [FX_EMOJIS[Math.floor(Math.random() * FX_EMOJIS.length)]]).forEach((em, i)=>{
+    const s = document.createElement('span');
+    s.className = 'fx-emoji';
+    s.textContent = em;
+    s.style.left = (40 + Math.random() * 20) + '%';
+    s.style.setProperty('--dx', (Math.random() * 56 - 28).toFixed(0) + 'px');
+    s.style.animationDelay = (i * 0.09) + 's';
+    fx.appendChild(s);
+    setTimeout(()=> s.remove(), 1500);
+  });
+}
+
+function spawnFloatAt(x, y, emojis){
+  (emojis || ['✨']).forEach((em, i)=>{
+    const s = document.createElement('span');
+    s.className = 'fx-emoji';
+    s.textContent = em;
+    s.style.position = 'fixed';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.zIndex = 80;
+    s.style.setProperty('--dx', (Math.random() * 30 - 15).toFixed(0) + 'px');
+    s.style.animationDelay = (i * 0.08) + 's';
+    document.body.appendChild(s);
+    setTimeout(()=> s.remove(), 1300);
+  });
+}
+
+function playBoing(){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(300, t);
+    o.frequency.exponentialRampToValueAtTime(680, t + 0.09);
+    o.frequency.exponentialRampToValueAtTime(240, t + 0.24);
+    g.gain.setValueAtTime(0.1, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.start(t);
+    o.stop(t + 0.34);
+  }catch(e){}
+}
+
+const ONCE_MOODS = ['happy','dizzy','wake'];
+function setMood(mc, mood, ms){
+  if(!mc) return;
+  if(ONCE_MOODS.includes(mood)) ONCE_MOODS.forEach(m=> mc.classList.remove(m));
+  if(mood === 'sleep'){
+    mc.classList.add('sleep');
+    return;
+  }
+  if(mood === 'idle'){
+    mc.classList.remove('sleep');
+    return;
+  }
+  mc.classList.remove('sleep');
+  if(ONCE_MOODS.includes(mood)){
+    mc.classList.add(mood);
+    if(ms) setTimeout(()=> mc.classList.remove(mood), ms);
+  }
+}
+
+/* 注视光标：看山会扭头看你 */
+let lastGaze = 0;
+function gazeAt(e){
+  const now = Date.now();
+  if(now - lastGaze < 24) return;
+  lastGaze = now;
+  mascots.forEach(mc=>{
+    if(mc.classList.contains('drag') || mc.classList.contains('sleep')) return;
+    const r = mc.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    let deg = Math.max(-9, Math.min(9, ((e.clientX - cx) / (innerWidth / 2)) * 8));
+    if(mc === RIGHT_MC) deg = -deg;
+    const img = mc.querySelector('.mascot-img');
+    if(img) img.style.setProperty('--gaze', deg.toFixed(2) + 'deg');
+  });
+}
+document.addEventListener('pointermove', gazeAt, {passive:true});
+
+/* 犯困：太久没人理，看山就睡着了 */
+let sleepTimer = null;
+function goSleep(){
+  mascots.forEach(mc=> setMood(mc, 'sleep'));
+  setTimeout(()=> spawnFx(LEFT_MC, ['💤']), 900);
+  setTimeout(()=> spawnFx(LEFT_MC, ['💤']), 2800);
+}
+function resetSleepTimer(){
+  clearTimeout(sleepTimer);
+  let slept = false;
+  mascots.forEach(mc=>{
+    if(mc.classList.contains('sleep')){
+      setMood(mc, 'idle');
+      slept = true;
+    }
+  });
+  if(slept){
+    if(LEFT_MC) spawnFx(LEFT_MC, ['✨']);
+  }
+  sleepTimer = setTimeout(goSleep, 40000);
+}
+document.addEventListener('pointermove', resetSleepTimer, {passive:true});
+document.addEventListener('pointerdown', resetSleepTimer, {passive:true});
+document.addEventListener('keydown', resetSleepTimer, {passive:true});
+resetSleepTimer();
+
+/* 戳一戳：弹一下、冒颗心、说句话 */
+let suppressClick = false;
+function pokeMascot(mc){
+  if(suppressClick){ suppressClick = false; return; }
+  if(mc.classList.contains('sleep')){
+    setMood(mc, 'wake', 620);
+    spawnFx(mc, ['💤','✨']);
+    playBoing();
+    kanshanSay(mc, KANSHAN_SAYS[Math.floor(Math.random() * KANSHAN_SAYS.length)]);
+    return;
+  }
+  mc.classList.add('poked');
+  setTimeout(()=> mc.classList.remove('poked'), 420);
+  spawnFx(mc, ['✨','💖']);
+  playBoing();
+  kanshanSay(mc);
+}
+mascots.forEach(mc=>{
+  mc.addEventListener('click', e=>{
+    e.preventDefault();
+    pokeMascot(mc);
+  });
+  mc.addEventListener('keydown', e=>{
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      pokeMascot(mc);
+    }
+  });
+});
+
+/* 拎起来拖走，松手弹回去 */
+let dragMC = null, dragStartX = 0, dragStartY = 0, dragMoved = false;
+document.addEventListener('pointerdown', e=>{
+  if(e.pointerType !== 'mouse' || e.button !== 0) return;
+  const mc = e.target.closest('.mascot');
+  if(!mc) return;
+  dragMC = mc;
+  dragMoved = false;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  mc.classList.add('drag');
+  try{ mc.setPointerCapture(e.pointerId); }catch(err){}
+  e.preventDefault();
+});
+document.addEventListener('pointermove', e=>{
+  if(!dragMC) return;
+  const dx = e.clientX - dragStartX, dy = e.clientY - dragStartY;
+  if(!dragMoved && Math.hypot(dx, dy) > 6){
+    dragMoved = true;
+    if(dragMC.querySelector('.mascot-img')) dragMC.querySelector('.mascot-img').style.transition = 'none';
+  }
+  dragMC.style.transform = `translate(${dx}px, ${dy}px) rotate(${Math.max(-10, Math.min(10, dx * 0.04))}deg)`;
+});
+function endDrag(e){
+  if(!dragMC) return;
+  const mc = dragMC;
+  dragMC = null;
+  try{ mc.releasePointerCapture && mc.releasePointerCapture(e.pointerId); }catch(err){}
+  if(dragMoved){
+    suppressClick = true;
+    mc.classList.remove('drag');
+    mc.classList.add('returning');
+    mc.style.transform = 'translate(0,0)';
+    spawnFx(mc, ['💨']);
+    setTimeout(()=> nextPose(mc), 320);
+    kanshanTip('drag', '转圈成功！这是官方四视图彩蛋，多拖几次集齐姿势～', 900);
+    setTimeout(()=>{
+      mc.classList.remove('returning');
+      mc.style.transform = '';
+      const img = mc.querySelector('.mascot-img');
+      if(img) img.style.transition = '';
+    }, 700);
+  } else {
+    mc.classList.remove('drag');
+    mc.style.transform = '';
+    const img = mc.querySelector('.mascot-img');
+    if(img) img.style.transition = '';
+  }
+}
+document.addEventListener('pointerup', endDrag);
+document.addEventListener('pointercancel', endDrag);
+
+/* 直答流式时的小心思 */
+let thinkEl = null;
+function thinkBubble(show){
+  if(thinkEl){ thinkEl.remove(); thinkEl = null; }
+  if(!show || !LEFT_MC) return;
+  const r = LEFT_MC.getBoundingClientRect();
+  thinkEl = document.createElement('div');
+  thinkEl.className = 'kanshan-think';
+  thinkEl.innerHTML = '思考中<span class="dot">…</span>';
+  document.body.appendChild(thinkEl);
+  thinkEl.style.left = Math.min(Math.max(r.left + r.width / 2 - 42, 12), innerWidth - 110) + 'px';
+  thinkEl.style.top = Math.max(r.top - 36, 8) + 'px';
+}
+
+/* ---------- 戳破音效 + 连击彩蛋 ---------- */
+let audioCtx = null;
+function popSound(){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(520, t);
+    o.frequency.exponentialRampToValueAtTime(140, t + 0.12);
+    g.gain.setValueAtTime(0.16, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.start(t);
+    o.stop(t + 0.16);
+  }catch(e){}
+}
+let comboCount = 0, comboTimer = null;
+const COMBO_QUIPS = {
+  3:"三连戳！手速可以，知乎老司机？",
+  5:"五连戳达成，细思极恐……",
+  8:"八连！别戳了，梗都要被你吓跑了",
+  12:"十二连戳！你就是轮子哥本哥？"
+};
+function trackCombo(el){
+  comboCount++;
+  clearTimeout(comboTimer);
+  comboTimer = setTimeout(()=>{ comboCount = 0; }, 2600);
+  if(daily && daily.taskId === 't3'){ daily.combo = Math.max(daily.combo, comboCount); bumpDaily(); }
+  if(comboCount >= 2 && el){
+    const r = el.getBoundingClientRect();
+    showComboPop(r.left + r.width / 2, r.top - 10, comboCount);
+  }
+  const q = COMBO_QUIPS[comboCount];
+  if(q){
+    const mc = document.querySelector('.mascot-left');
+    if(mc) kanshanSay(mc, q);
+  }
+  if(comboCount >= 20 && !body.classList.contains('frenzy')){
+    body.classList.add('frenzy');
+    announce('看山暴走！气泡加速 5 秒');
+    spawnFx(LEFT_MC, ['🔥','⚡']);
+    setTimeout(()=> body.classList.remove('frenzy'), 5000);
+  }
+}
+
+/* ---------- 隐藏彩蛋梗 ---------- */
+const HIDDEN_MEME = {
+  phrase:"刘看山其实是只哈士奇",
+  tag:"彩蛋",
+  role:"隐藏梗 · 设计师的黑历史",
+  desc:"2013年知乎吉祥物定稿前，初代刘看山其实是一只龇牙咧嘴的哈士奇——因为表情太凶，被用户集体抗议“吓人”，才回炉改成今天这只呆萌的北极狐。这段黑历史被官方亲自写进冷知识，成了刘看山最出圈的设定梗。恭喜你，戳头像戳出了它。",
+  quote:"知乎冷知识：初代刘看山是只龇着牙的哈士奇，\n因为“太凶”被用户抗议，才改成了北极狐。",
+  derivs:[
+    {t:"刘看山，知乎的北极狐",n:"改正之后的正式形象。"},
+    {t:"看山带你看老梗",n:"哈士奇再就业，成了本栏目主编。"}
+  ],
+  links:[
+    {label:"关于知乎的冷知识有哪些？",url:"https://www.zhihu.com/question/1889253249913160284"}
+  ],
+  above:"知乎 · 2013"
+};
+EXTRA[HIDDEN_MEME.phrase] = {
+  o:"2013年知乎启动吉祥物设计，初稿是一只龇牙咧嘴的哈士奇，走的是“犀利、有攻击性”的路线。用户看到后集体抗议“太凶了”，设计师只好回炉，最终诞生了温顺呆萌的北极狐刘看山。这段往事后来被知乎官方当成冷知识公开，哈士奇版本反而成了传说。",
+  s:"这是本站的隐藏彩蛋梗，只有连点五次看山头像的人才能解锁。解锁后它会进入气泡池，和 regular 梗一起随机出现。",
+  du:[ZS("刘看山 哈士奇"),ZS("看山带你看老梗")]
+};
+if(localStorage.getItem('kanshan-easter') === '1' && !MEMES.includes(HIDDEN_MEME)) MEMES.push(HIDDEN_MEME);
+let avatarClicks = 0, avatarTimer = null;
+document.getElementById('avatar-stage').addEventListener('click', ()=>{
+  avatarClicks++;
+  const av = document.getElementById('avatar-stage');
+  av.classList.remove('hero-poke');
+  void av.offsetWidth;
+  av.classList.add('hero-poke');
+  setTimeout(()=> av.classList.remove('hero-poke'), 500);
+  const ar = av.getBoundingClientRect();
+  spawnFloatAt(ar.left + ar.width / 2, ar.top + 10, ['✨']);
+  clearTimeout(avatarTimer);
+  avatarTimer = setTimeout(()=>{ avatarClicks = 0; }, 2000);
+  if(avatarClicks >= 5){
+    avatarClicks = 0;
+    const mc = document.querySelector('.mascot-left');
+    if(!MEMES.includes(HIDDEN_MEME)){
+      MEMES.push(HIDDEN_MEME);
+      localStorage.setItem('kanshan-easter', '1');
+      if(mc) kanshanSay(mc, "被你发现了！隐藏梗「刘看山其实是只哈士奇」已解锁，刷新气泡池就能遇到它～");
+    } else if(mc){
+      kanshanSay(mc, "隐藏梗已经在池子里啦，多刷几批就能戳到。");
+    }
+  }
+});
+
+/* ---------- 知乎浓度测试 ---------- */
+function startQuiz(){
+  const qs = shuffled(MEMES.slice()).slice(0, 10);
+  let i = 0, score = 0;
+  const answers = [];
+  const box = $('quiz-body');
+  function renderQ(){
+    if(i >= qs.length) return renderResult();
+    const m = qs[i];
+    const opts = shuffled([m].concat(shuffled(MEMES.filter(x=>x !== m)).slice(0, 3)));
+    box.innerHTML = '';
+    const p = document.createElement('div');
+    p.className = 'q-progress';
+    p.textContent = `第 ${i + 1} / ${qs.length} 题 · 当前 ${score * 10} 分`;
+    const role = document.createElement('div');
+    role.className = 'q-role';
+    role.textContent = '「' + m.role + '」说的是哪个梗？';
+    const wrap = document.createElement('div');
+    wrap.className = 'q-opts';
+    opts.forEach(o=>{
+      const b = document.createElement('button');
+      b.className = 'q-opt';
+      b.type = 'button';
+      b.textContent = o.phrase;
+      b.addEventListener('click', ()=>{
+        answers.push({m, chosen: o});
+        if(o === m) score++;
+        wrap.querySelectorAll('.q-opt').forEach(x=>{
+          x.disabled = true;
+          if(x.textContent === m.phrase) x.classList.add('right');
+        });
+        if(o !== m) b.classList.add('wrong');
+        setTimeout(()=>{ i++; renderQ(); }, 700);
+      });
+      wrap.appendChild(b);
+    });
+    box.appendChild(p);
+    box.appendChild(role);
+    box.appendChild(wrap);
+  }
+  function renderResult(){
+    const pct = Math.round(score / qs.length * 100);
+    let tier, comment;
+    if(pct >= 90){ tier = '活化石级老知乎'; comment = '轮子哥见你都递烟。'; }
+    else if(pct >= 70){ tier = '骨灰级梗学家'; comment = '谢邀，鉴定完毕：自己人。'; }
+    else if(pct >= 40){ tier = '知乎熟客'; comment = '有点东西，但还没到「懂的都懂」。'; }
+    else { tier = '梗界小透明'; comment = '问题不大，回去多戳几个气泡。'; }
+    box.innerHTML = '';
+    const r = document.createElement('div');
+    r.className = 'q-result';
+    const sc = document.createElement('div'); sc.className = 'q-score'; sc.textContent = score * 10;
+    const ti = document.createElement('div'); ti.className = 'q-tier'; ti.textContent = tier;
+    const co = document.createElement('div'); co.className = 'q-comment'; co.textContent = comment;
+    const act = document.createElement('div'); act.className = 'f-actions';
+    const again = document.createElement('button');
+    again.type = 'button'; again.textContent = '再测一次';
+    again.addEventListener('click', startQuiz);
+    const done = document.createElement('button');
+    done.type = 'button'; done.textContent = '收下成绩';
+    done.addEventListener('click', ()=> closeModal('quiz-open'));
+    act.appendChild(again);
+    act.appendChild(done);
+    // 测试分析：逐题列出问题 / 用户答案 / 正确答案 / 解析
+    const an = document.createElement('div');
+    an.className = 'q-analysis';
+    const ah = document.createElement('div'); ah.className = 'qa-head';
+    ah.textContent = '测 试 分 析';
+    an.appendChild(ah);
+    answers.forEach((a, idx)=>{
+      const item = document.createElement('div');
+      item.className = 'qa-item' + (a.chosen === a.m ? ' qa-right' : ' qa-wrong');
+      const q = document.createElement('div'); q.className = 'qa-q';
+      q.textContent = (idx + 1) + '. 「' + a.m.role + '」说的是哪个梗？';
+      const mine = document.createElement('div'); mine.className = 'qa-mine';
+      mine.textContent = '你的答案：' + a.chosen.phrase + (a.chosen === a.m ? '　✓' : '　✗');
+      const corr = document.createElement('div'); corr.className = 'qa-corr';
+      corr.textContent = '正确答案：' + a.m.phrase;
+      const exp = document.createElement('div'); exp.className = 'qa-exp';
+      const snippet = a.m.desc ? a.m.desc.slice(0, 46) + '…' : '';
+      exp.textContent = '解析：' + (a.m.role || '') + (snippet ? '。' + snippet : '');
+      item.appendChild(q); item.appendChild(mine); item.appendChild(corr); item.appendChild(exp);
+      an.appendChild(item);
+    });
+    r.appendChild(sc); r.appendChild(ti); r.appendChild(co); r.appendChild(an); r.appendChild(act);
+    box.appendChild(r);
+  }
+  openModal('quiz-open');
+  renderQ();
+}
+$('quiz-btn').addEventListener('click', ()=>{
+  kanshanTip('quiz', '浓度测试十连问，答对能涨好感哦～');
+  startQuiz();
+});
+$('quiz-close').addEventListener('click', ()=> closeModal('quiz-open'));
+$('quiz-mask').addEventListener('click', e=>{ if(e.target.id === 'quiz-mask') closeModal('quiz-open'); });
+
+/* ---------- 梗宇宙星图（可拖拽 / 连线悬停 / 粒子流） ---------- */
+let graphRAF = null;
+function stopGraph(){
+  if(graphRAF){ cancelAnimationFrame(graphRAF); graphRAF = null; }
+  document.querySelectorAll('.graph-tip').forEach(x=>x.remove());
+}
+function drawGraph(){
+  const cv = $('graph-canvas');
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = Math.min(1800, document.documentElement.clientWidth - 16);
+  const cssH = Math.min(1000, document.documentElement.clientHeight - 16);
+  const compact = cssW < 520;
+  const R_OUT = compact ? 6 : 9;        // 外圈半径
+  const R_IN = compact ? 4 : 6.5;       // 节点半径
+  const FONT_LABEL = compact ? '500 8px "Noto Sans SC", sans-serif' : '600 10px "Noto Sans SC", sans-serif';
+  cv.style.width = cssW + 'px';
+  cv.style.height = cssH + 'px';
+  cv.width = cssW * dpr;
+  cv.height = cssH * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // 网格化初始分布：保证 107 个节点铺满画布且互不重叠
+  const cols = Math.ceil(Math.sqrt(MEMES.length * cssW / cssH));
+  const rows = Math.ceil(MEMES.length / cols);
+  let nodes = MEMES.map((m, i)=>{
+    const gx = (i % cols) / Math.max(1, cols - 1);
+    const gy = Math.floor(i / cols) / Math.max(1, rows - 1);
+    const jx = (Math.random() - 0.5) * 0.10;
+    const jy = (Math.random() - 0.5) * 0.10;
+    return {
+      m,
+      x: 42 + (gx + jx) * (cssW - 84),
+      y: 30 + (gy + jy) * (cssH - 60),
+      vx: 0, vy: 0
+    };
+  });
+  const idx = new Map(nodes.map((n, i)=>[n.m, i]));
+  let edges = [];
+  MEMES.forEach((m, i)=>{
+    m.derivs.forEach(d=>{
+      const l = findLinkedMeme(d.t, m);
+      if(l){
+        const j = idx.get(l);
+        if(j !== undefined && j > i) edges.push([i, j]);
+      }
+    });
+  });
+  // 默认精简视图：只展示核心子图（有连线关系的节点），更疏朗；点按钮可看全部
+  if(!window.__graphShowAll){
+    const seeds = shuffled(nodes).slice(0, 42);
+    const inSet = new Set(seeds);
+    let grew = true;
+    while(grew && inSet.size < 62){
+      grew = false;
+      edges.forEach(([i, j])=>{
+        const hasI = inSet.has(nodes[i]), hasJ = inSet.has(nodes[j]);
+        if(hasI !== hasJ){
+          inSet.add(hasI ? nodes[j] : nodes[i]);
+          grew = true;
+        }
+      });
+    }
+    const kept = nodes.filter(n=> inSet.has(n));
+    const mapIdx = new Map(kept.map((n, i)=>[n, i]));
+    edges = edges.filter(([i, j])=> inSet.has(nodes[i]) && inSet.has(nodes[j]))
+                 .map(([i, j])=> [mapIdx.get(nodes[i]), mapIdx.get(nodes[j])]);
+    nodes = kept;
+  }
+  const cx = cssW / 2, cy = cssH / 2;
+  // 视图变换：scale 缩放，tx/ty 平移（屏幕像素）
+  const view = { scale: 1, tx: 0, ty: 0 };
+  const clamp = (v, a, b)=> Math.max(a, Math.min(b, v));
+  function zoomAt(mx, my, factor){
+    const ns = clamp(view.scale * factor, 0.25, 3);
+    factor = ns / view.scale;
+    view.tx = mx - (mx - view.tx) * factor;
+    view.ty = my - (my - view.ty) * factor;
+    view.scale = ns;
+  }
+  const toScreen = n=>({ x: n.x * view.scale + view.tx, y: n.y * view.scale + view.ty });
+
+  const particles = edges.map(()=>({ t: Math.random() }));
+  let hoverEdge = -1, hoverNode = null, dragNode = null, downX = 0, downY = 0, moved = false;
+  const tooltip = document.createElement('div');
+  tooltip.className = 'graph-tip';
+  document.body.appendChild(tooltip);
+
+  const edgeCtrl = (a, b)=>({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 22 });
+  function distToEdge(px, py, a, b){
+    const c = edgeCtrl(a, b);
+    let best = 1e9;
+    for(let t = 0; t <= 1; t += 0.02){
+      const x = (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * c.x + t * t * b.x;
+      const y = (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * c.y + t * t * b.y;
+      const d = (x - px) * (x - px) + (y - py) * (y - py);
+      if(d < best) best = d;
+    }
+    return Math.sqrt(best);
+  }
+  function hitNode(x, y){
+    let best = null, bd = (24 / view.scale) * (24 / view.scale);
+    nodes.forEach(n=>{
+      const d = (n.x - x) * (n.x - x) + (n.y - y) * (n.y - y);
+      if(d < bd){ bd = d; best = n; }
+    });
+    return best;
+  }
+  function draw(){
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssW, cssH);
+    ctx.setTransform(dpr * view.scale, 0, 0, dpr * view.scale, dpr * view.tx, dpr * view.ty);
+    const inv = 1 / view.scale;
+    edges.forEach(([i, j], k)=>{
+      const a = nodes[i], b = nodes[j], c = edgeCtrl(a, b);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.quadraticCurveTo(c.x, c.y, b.x, b.y);
+      ctx.strokeStyle = k === hoverEdge ? 'rgba(0,102,255,.9)' : 'rgba(0,102,255,.10)';
+      ctx.lineWidth = (k === hoverEdge ? 2.4 : 1.2) * inv;
+      ctx.stroke();
+      const p = particles[k];
+      p.t = (p.t + 0.0035) % 1;
+      const t = p.t;
+      const px = (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * c.x + t * t * b.x;
+      const py = (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * c.y + t * t * b.y;
+      ctx.beginPath();
+      ctx.arc(px, py, 2.2 * inv, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(232,104,90,.9)';
+      ctx.fill();
+    });
+    ctx.textAlign = 'center';
+    nodes.forEach(n=>{
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, R_OUT * inv, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,102,255,.10)';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, R_IN * inv, 0, Math.PI * 2);
+      ctx.fillStyle = dragNode === n ? '#FF9F43' : '#0066FF';
+      ctx.fill();
+      ctx.font = (compact ? 10 : 13) / view.scale + 'px "Noto Sans SC", sans-serif';
+      ctx.fillStyle = '#33507A';
+      if(hoverNode === n){
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, (R_IN + 5) * inv, 0, Math.PI * 2);
+        ctx.strokeStyle = '#FF9F43';
+        ctx.lineWidth = 1.6 * inv;
+        ctx.stroke();
+      }
+      // 文字常显（缩到 0.7 倍以下才隐藏），放大更清晰
+      if(view.scale >= 0.7 || hoverNode === n){
+        const label = n.m.phrase.length > 6 ? n.m.phrase.slice(0, 6) + '…' : n.m.phrase;
+        ctx.fillText(label, n.x, n.y + (compact ? 17 : 28) * inv);
+      }
+    });
+    graphRAF = requestAnimationFrame(draw);
+  }
+  const toLocal = e=>{
+    const r = cv.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  const toWorld = p=>({ x: (p.x - view.tx) / view.scale, y: (p.y - view.ty) / view.scale });
+  const pointers = new Map();
+  let panning = false, pinchDist = 0, pinchScale = 1, lastPan = null;
+
+  cv.addEventListener('pointerdown', e=>{
+    const p = toLocal(e);
+    pointers.set(e.pointerId, { x: p.x, y: p.y });
+    if(pointers.size === 1){
+      downX = e.clientX; downY = e.clientY; moved = false;
+      const w = toWorld(p);
+      dragNode = hitNode(w.x, w.y);
+      if(dragNode){
+        try{ cv.setPointerCapture(e.pointerId); }catch(err){}
+      } else {
+        panning = true;
+        lastPan = p;
+        cv.style.cursor = 'grabbing';
+      }
+    } else if(pointers.size === 2){
+      dragNode = null; panning = false;
+      const pts = [...pointers.values()];
+      pinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      pinchScale = view.scale;
+    }
+  });
+  cv.addEventListener('pointermove', e=>{
+    const p = toLocal(e);
+    if(pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: p.x, y: p.y });
+    if(pointers.size >= 2){
+      const pts = [...pointers.values()];
+      const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      if(pinchDist > 0 && d > 0){
+        const ns = clamp(pinchScale * d / pinchDist, 0.25, 3);
+        zoomAt(mid.x, mid.y, ns / view.scale);
+      }
+      if(Math.hypot(e.clientX - downX, e.clientY - downY) > 5) moved = true;
+      return;
+    }
+    if(dragNode){
+      if(Math.hypot(e.clientX - downX, e.clientY - downY) > 5) moved = true;
+      const w = toWorld(p);
+      dragNode.x = Math.max(50, Math.min(cssW - 50, w.x));
+      dragNode.y = Math.max(36, Math.min(cssH - 36, w.y));
+      return;
+    }
+    if(panning){
+      if(Math.hypot(e.clientX - downX, e.clientY - downY) > 5) moved = true;
+      if(lastPan){
+        view.tx += p.x - lastPan.x;
+        view.ty += p.y - lastPan.y;
+      }
+      lastPan = p;
+      return;
+    }
+    const w = toWorld(p);
+    const hit = hitNode(w.x, w.y);
+    if(hit){
+      hoverNode = hit;
+      tooltip.textContent = hit.m.phrase;
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top = (e.clientY - 10) + 'px';
+      tooltip.style.display = 'block';
+      cv.style.cursor = 'pointer';
+      hoverEdge = -1;
+      return;
+    }
+    hoverNode = null;
+    let best = -1, bd = 14;
+    edges.forEach(([i, j], k)=>{
+      const d = distToEdge(p.x, p.y, toScreen(nodes[i]), toScreen(nodes[j]));
+      if(d < bd){ bd = d; best = k; }
+    });
+    hoverEdge = best;
+    if(hoverEdge >= 0){
+      const [i, j] = edges[hoverEdge];
+      tooltip.textContent = '「' + nodes[i].m.phrase + '」 ⇄ 「' + nodes[j].m.phrase + '」';
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top = (e.clientY - 10) + 'px';
+      tooltip.style.display = 'block';
+      cv.style.cursor = 'pointer';
+    } else {
+      tooltip.style.display = 'none';
+      cv.style.cursor = 'grab';
+    }
+  });
+  cv.addEventListener('wheel', e=>{
+    e.preventDefault();
+    const p = toLocal(e);
+    const factor = Math.exp(-e.deltaY * 0.0015);
+    zoomAt(p.x, p.y, factor);
+  }, { passive: false });
+  const up = e=>{
+    pointers.delete(e.pointerId);
+    if(dragNode && !moved){
+      stopGraph();
+      closeModal('graph-open');
+      addToHistory(dragNode.m);
+      body.classList.add('detail-open');
+      fillCard(dragNode.m);
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+    dragNode = null;
+    panning = false;
+    pinchDist = 0;
+    lastPan = null;
+    cv.style.cursor = 'grab';
+  };
+  cv.addEventListener('pointerup', up);
+  cv.addEventListener('pointercancel', up);
+  draw();
+}
+$('graph-btn').addEventListener('click', ()=>{
+  kanshanTip('graph', '星图可以滚轮缩放、空白处拖动平移，悬停连线看关联～');
+  openModal('graph-open');
+  requestAnimationFrame(drawGraph);
+});
+$('graph-close').addEventListener('click', ()=>{
+  stopGraph();
+  closeModal('graph-open');
+});
+$('graph-mask').addEventListener('click', e=>{
+  if(e.target.id === 'graph-mask'){
+    stopGraph();
+    closeModal('graph-open');
+  }
+});
+const graphToggle = $('graph-toggle');
+function syncGraphToggle(){
+  graphToggle.textContent = window.__graphShowAll
+    ? '精简视图（只看核心关系）'
+    : '显示全部 ' + MEMES.length + ' 个节点';
+}
+graphToggle.addEventListener('click', ()=>{
+  window.__graphShowAll = !window.__graphShowAll;
+  syncGraphToggle();
+  stopGraph();
+  drawGraph();
+});
+syncGraphToggle();
+
+/* ---------- 直答双口吻 ---------- */
+const FLAVOR_PROMPTS = {
+  old: '，请用知乎老用户的黑话口吻来回答，可以自然地引用其他站内梗',
+  newbie: '，请假设对方完全没上过知乎，用最通俗的大白话讲明白'
+};
+document.querySelectorAll('.zf-btn').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    if(currentMeme) fetchZhida(currentMeme.phrase, FLAVOR_PROMPTS[b.dataset.flavor] || '');
+  });
+});
+
+/* ---------- 成就报告 ---------- */
+function fillReport(){
+  const seen = new Set(history.map(h=>h.phrase));
+  const total = MEMES.length;
+  const pct = total ? Math.round(seen.size / total * 100) : 0;
+  $('r-ring').style.setProperty('--p', pct);
+  $('r-num').textContent = seen.size + '/' + total;
+  let tier;
+  if(pct >= 90) tier = '梗学活化石';
+  else if(pct >= 60) tier = '骨灰级梗学家';
+  else if(pct >= 30) tier = '知乎熟客';
+  else tier = '梗界小透明';
+  $('r-tier').textContent = tier;
+  $('r-line').textContent = `已戳破 ${seen.size} 个梗 · 收藏 ${favs.length} 个 · 击败约 ${Math.min(99, 5 + Math.round(pct * 0.9))}% 的知乎er`;
+  renderChallenge();
+}
+
+/* ============ 体验与玩法扩展 ============ */
+let savedScroll = 0;
+let bubbleSuppress = false;
+
+function getStore(key, def){
+  try{
+    const v = JSON.parse(localStorage.getItem(key));
+    return v === null || v === undefined ? def : v;
+  }catch(e){ return def; }
+}
+function setStore(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+function memeYear(m){
+  const n = String(m.above || '').match(/(19|20)\d{2}/);
+  return n ? +n[0] : null;
+}
+function announce(msg){
+  const el = $('aria-live');
+  if(!el) return;
+  el.textContent = '';
+  setTimeout(()=>{ el.textContent = msg; }, 40);
+}
+let lastFocus = null;
+function openModal(cls){
+  lastFocus = document.activeElement;
+  body.classList.add(cls);
+}
+function closeModal(cls){
+  body.classList.remove(cls);
+  if(lastFocus && document.contains(lastFocus)) lastFocus.focus();
+}
+
+/* ---------- 好感度养成 ---------- */
+const AFF_KEY = 'kanshan-affection';
+let affection = getStore(AFF_KEY, { pts: 0, feeds: 0, fed: [], relay: [], quizDone: [] });
+const LEVELS = [
+  { name: '路人', min: 0 },
+  { name: '知乎熟客', min: 30 },
+  { name: '老铁', min: 80 },
+  { name: '轮子哥本哥', min: 150 }
+];
+function saveAff(){ setStore(AFF_KEY, affection); }
+function affLevel(){
+  let lv = LEVELS[0];
+  LEVELS.forEach(l=>{ if(affection.pts >= l.min) lv = l; });
+  return lv;
+}
+function updateLevelBadge(){
+  const el = $('level-badge');
+  if(!el) return;
+  const lv = affLevel();
+  const next = LEVELS.find(l => l.min > affection.pts);
+  el.textContent = lv.name;
+  el.title = next
+    ? `好感 ${affection.pts} 分 · 距「${next.name}」还差 ${next.min - affection.pts} 分`
+    : `好感 ${affection.pts} 分 · 满级！`;
+}
+function addAff(pts, reason){
+  const before = affLevel();
+  affection.pts += pts;
+  saveAff();
+  updateLevelBadge();
+  const after = affLevel();
+  if(after !== before){
+    const el = $('level-badge');
+    if(el){ el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+    announce(`好感升级：${after.name}`);
+    const mc = document.querySelector('.mascot-left');
+    if(mc){
+      kanshanSay(mc, `好感 +${pts}（${reason}），我升到「${after.name}」了！`);
+      spawnFx(mc, ['🎉','💖','✨']);
+    }
+  }
+}
+
+/* ---------- 今日挑战 ---------- */
+const DAILY_TASKS = {
+  t1: { label: '戳破 3 个没看过的梗', target: 3, unit: '个' },
+  t2: { label: '收藏 1 个梗', target: 1, unit: '个' },
+  t3: { label: '连击到 10', target: 10, unit: '连' },
+  t4: { label: '答对 2 道梗学快问', target: 2, unit: '道' }
+};
+const todayKey = new Date().toDateString();
+let daily = getStore('kanshan-daily', null);
+function hashStr(s){
+  let h = 0;
+  for(const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return h;
+}
+function initDaily(){
+  if(!daily || daily.date !== todayKey){
+    const id = ['t1','t2','t3','t4'][hashStr(todayKey) % 4];
+    daily = { date: todayKey, taskId: id, prog: 0, done: false, seen: [], favs: 0, combo: 0, quiz: 0 };
+    saveDaily();
+  }
+}
+function saveDaily(){ setStore('kanshan-daily', daily); }
+function dailyProgress(){
+  const t = DAILY_TASKS[daily.taskId];
+  const p = daily.taskId === 't1' ? daily.seen.length
+    : daily.taskId === 't2' ? daily.favs
+    : daily.taskId === 't3' ? daily.combo
+    : daily.quiz;
+  return { p, t };
+}
+function bumpDaily(){
+  if(!daily || daily.done) return;
+  const { p, t } = dailyProgress();
+  daily.prog = p;
+  if(p >= t.target){
+    daily.done = true;
+    addAff(5, '今日挑战达成');
+    announce('今日挑战完成！好感 +5');
+    const mc = document.querySelector('.mascot-left');
+    if(mc) kanshanSay(mc, '今日挑战达成，你比昨天更懂梗了。');
+    spawnFx(LEFT_MC, ['🏅','✨']);
+  }
+  saveDaily();
+  renderChallenge();
+}
+function renderChallenge(){
+  const box = $('challenge-box');
+  if(!box || !daily) return;
+  const t = DAILY_TASKS[daily.taskId];
+  const { p } = dailyProgress();
+  $('challenge-title').textContent = '今日挑战 · ' + t.label;
+  $('challenge-state').textContent = daily.done ? '✓ 已完成' : `${p} / ${t.target} ${t.unit}`;
+  $('challenge-fill').style.width = Math.min(100, Math.round(p / t.target * 100)) + '%';
+  $('challenge-sub').textContent = daily.done ? '奖励已到账：好感 +5 · 明天再来' : '完成奖励：好感 +5 · 明天 0 点刷新';
+  box.classList.toggle('done', daily.done);
+}
+
+/* ---------- 连击得分 ---------- */
+function showComboPop(x, y, combo){
+  const el = document.createElement('div');
+  el.className = 'combo-pop';
+  el.textContent = '连击 ×' + combo + '  +' + combo * 10;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(()=> el.remove(), 1050);
+}
+
+/* ---------- 弹幕回声 ---------- */
+let danmakuTimer = null;
+function startDanmaku(){
+  stopDanmaku();
+  const keys = Object.keys(TIPS);
+  danmakuTimer = setInterval(()=>{
+    if(!body.classList.contains('detail-open')) return;
+    if(document.querySelectorAll('.danmaku').length > 7) return;
+    const s = document.createElement('span');
+    s.className = 'danmaku';
+    s.textContent = keys[Math.floor(Math.random() * keys.length)];
+    s.style.setProperty('--ty', (130 + Math.random() * 280) + 'px');
+    s.style.animationDuration = (7 + Math.random() * 4) + 's';
+    s.style.fontSize = (10 + Math.random() * 4) + 'px';
+    s.style.opacity = (0.25 + Math.random() * 0.35).toFixed(2);
+    document.body.appendChild(s);
+    setTimeout(()=> s.remove(), 12000);
+  }, 2400);
+}
+function stopDanmaku(){
+  clearInterval(danmakuTimer);
+  danmakuTimer = null;
+  document.querySelectorAll('.danmaku').forEach(x=> x.remove());
+}
+
+/* ---------- 梗学快问 ---------- */
+const QUIZ_CACHE_KEY = 'kanshan-quiz-cache';
+let quizCache = getStore(QUIZ_CACHE_KEY, {});
+function saveQuizCache(){ setStore(QUIZ_CACHE_KEY, quizCache); }
+
+function renderQuickQuiz(m){
+  const box = $('quick-quiz');
+  if(!box) return;
+  renderLlmQuiz(m, box);
+}
+
+/* 主链路：独立大模型出题；失败/未配置自动降级本地年份题 */
+async function renderLlmQuiz(m, box){
+  const yr = memeYear(m);
+  const cached = quizCache[m.phrase];
+  if(cached && cached.question && Date.now() - cached.ts < 86400000){
+    showLlmQuiz(m, box, cached);
+    return;
+  }
+  box.style.display = 'block';
+  box.innerHTML = '<div class="qq-title">看 山 出 题</div><div class="quiz-loading"><span class="zhida-loading">看山正在翻题库…</span></div>';
+  const ext = EXTRA[m.phrase] || {};
+  const knowledge = [
+    '梗名：' + m.phrase,
+    '类型：' + (m.tag || ''),
+    '定位：' + (m.role || ''),
+    '简介：' + (m.desc || ''),
+    m.quote ? '金句：' + m.quote : '',
+    ext.o ? '来龙去脉：' + ext.o : '',
+    ext.s ? '使用场景：' + ext.s : '',
+    m.derivs && m.derivs.length ? '衍生梗：' + m.derivs.map(d => d.t).join('、') : '',
+    yr ? '年份参考：' + yr + ' 年' : ''
+  ].filter(Boolean).join('\n');
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=> ctrl.abort(), 32000);
+  try{
+    const res = await fetch('/api/quiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phrase: m.phrase, knowledge }),
+      signal: ctrl.signal
+    });
+    const data = await res.json().catch(()=> null);
+    if(
+      !data || data.error || !data.question ||
+      !Array.isArray(data.options) || data.options.length !== 4 ||
+      !Number.isInteger(data.answer) || data.answer < 0 || data.answer > 3
+    ){
+      throw new Error('quiz unavailable');
+    }
+    const qz = {
+      question: data.question,
+      options: data.options,
+      answer: data.answer,
+      explanation: data.explanation || '',
+      ts: Date.now()
+    };
+    quizCache[m.phrase] = qz;
+    saveQuizCache();
+    showLlmQuiz(m, box, qz);
+  }catch(err){
+    renderYearQuiz(m, box, yr);
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+function showLlmQuiz(m, box, qz){
+  box.style.display = 'block';
+  box.innerHTML = '<div class="qq-title">看 山 出 题</div><div class="q-role">' + qz.question + '</div><div class="q-opts"></div><div class="quiz-answer" style="display:none"></div>';
+  const wrap = box.querySelector('.q-opts');
+  const ansBox = box.querySelector('.quiz-answer');
+  qz.options.forEach((opt, i)=>{
+    const b = document.createElement('button');
+    b.className = 'q-opt';
+    b.type = 'button';
+    b.textContent = String.fromCharCode(65 + i) + '. ' + opt;
+    b.addEventListener('click', ()=>{
+      wrap.querySelectorAll('.q-opt').forEach(x=> x.disabled = true);
+      const correct = i === qz.answer;
+      if(correct){
+        b.classList.add('right');
+        addAff(3, '快问答对');
+        spawnFx(LEFT_MC, ['✨','⭐']);
+        announce('答对了！好感 +3');
+        if(daily && daily.taskId === 't4'){ daily.quiz++; bumpDaily(); }
+      } else {
+        b.classList.add('wrong');
+        wrap.querySelectorAll('.q-opt')[qz.answer].classList.add('right');
+        announce('答案是 ' + String.fromCharCode(65 + qz.answer));
+      }
+      ansBox.style.display = 'block';
+      ansBox.classList.toggle('wrong-answer', !correct);
+      ansBox.innerHTML =
+        '<div class="qq-ans-label">' + (correct ? '✓ 正解' : '✗ 正确答案 ' + String.fromCharCode(65 + qz.answer) + '）') + '</div>' +
+        (qz.explanation ? '<div class="qq-expl">' + qz.explanation + '</div>' : '');
+    });
+    wrap.appendChild(b);
+  });
+}
+
+/* 降级：本地年份快问（无外部模型时的兜底，也保留出题速度） */
+function renderYearQuiz(m, box, yr){
+  if(!yr || affection.quizDone.includes(m.phrase)){
+    box.style.display = 'none';
+    return;
+  }
+  box.style.display = 'block';
+  box.innerHTML = '<div class="qq-title">梗 学 快 问 · 本地题库</div><div class="q-role">「' + m.phrase + '」出自哪一年？</div><div class="q-opts"></div>';
+  const wrap = box.querySelector('.q-opts');
+  const years = [...new Set(MEMES.map(memeYear).filter(Boolean))].filter(y => y !== yr);
+  const opts = shuffled([yr, ...shuffled(years).slice(0, 2)]);
+  opts.forEach(y=>{
+    const b = document.createElement('button');
+    b.className = 'q-opt';
+    b.type = 'button';
+    b.textContent = y + ' 年';
+    b.addEventListener('click', ()=>{
+      wrap.querySelectorAll('.q-opt').forEach(x=> x.disabled = true);
+      if(y === yr){
+        b.classList.add('right');
+        addAff(3, '快问答对');
+        spawnFx(LEFT_MC, ['✨','⭐']);
+        announce('答对了！好感 +3');
+        if(daily && daily.taskId === 't4'){ daily.quiz++; bumpDaily(); }
+      } else {
+        b.classList.add('wrong');
+        wrap.querySelectorAll('.q-opt').forEach(x=>{ if(parseInt(x.textContent) === yr) x.classList.add('right'); });
+        announce('答案是 ' + yr + ' 年');
+      }
+      affection.quizDone.push(m.phrase);
+      saveAff();
+    });
+    wrap.appendChild(b);
+  });
+}
+
+/* ---------- 键盘导航 ---------- */
+function moveBubbleFocus(dir){
+  const bubbles = [...document.querySelectorAll('.bubble')];
+  if(!bubbles.length) return;
+  let i = bubbles.indexOf(document.activeElement);
+  i = i < 0 ? (dir > 0 ? -1 : 0) : i + dir;
+  i = (i + bubbles.length) % bubbles.length;
+  bubbles[i].focus();
+}
+document.addEventListener('keydown', e=>{
+  if(!e.target || typeof e.target.matches !== 'function') return;
+  if(e.target.matches('input, textarea, select') || e.target.isContentEditable) return;
+  if(body.classList.contains('detail-open')) return;
+  if(body.classList.contains('history-open') || body.classList.contains('fortune-open') ||
+     body.classList.contains('quiz-open') || body.classList.contains('graph-open') ||
+     body.classList.contains('timeline-open') || body.classList.contains('share-open')) return;
+  if(e.key === 'ArrowRight' || e.key === 'ArrowDown'){ e.preventDefault(); moveBubbleFocus(1); }
+  else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){ e.preventDefault(); moveBubbleFocus(-1); }
+  else if(e.key === 'Home'){
+    e.preventDefault();
+    const bs = [...document.querySelectorAll('.bubble')];
+    if(bs.length) bs[0].focus();
+  }
+  else if(e.key === 'End'){
+    e.preventDefault();
+    const bs = [...document.querySelectorAll('.bubble')];
+    if(bs.length) bs[bs.length - 1].focus();
+  }
+});
+
+/* ---------- 喂梗小游戏：把气泡拖给看山 ---------- */
+let bdrag = null;
+document.addEventListener('pointerdown', e=>{
+  if(body.classList.contains('detail-open')) return;
+  const b = e.target.closest('.bubble');
+  if(!b || !b._meme) return;
+  bdrag = { el: b, m: b._meme, sx: e.clientX, sy: e.clientY, moved: false, ghost: null };
+});
+document.addEventListener('pointermove', e=>{
+  if(!bdrag) return;
+  const dx = e.clientX - bdrag.sx, dy = e.clientY - bdrag.sy;
+  if(!bdrag.moved && Math.hypot(dx, dy) > 12){
+    bdrag.moved = true;
+    bdrag.ghost = document.createElement('div');
+    bdrag.ghost.className = 'bubble-ghost';
+    bdrag.ghost.textContent = bdrag.m.phrase;
+    document.body.appendChild(bdrag.ghost);
+  }
+  if(bdrag.moved && bdrag.ghost){
+    bdrag.ghost.style.left = e.clientX + 'px';
+    bdrag.ghost.style.top = e.clientY + 'px';
+    const over = hitMascot(e.clientX, e.clientY);
+    mascots.forEach(mc=> mc.classList.toggle('drop-target', mc === over));
+  }
+});
+document.addEventListener('pointerup', e=>{
+  if(!bdrag) return;
+  const d = bdrag;
+  bdrag = null;
+  mascots.forEach(mc=> mc.classList.remove('drop-target'));
+  if(d.moved){
+    bubbleSuppress = true;
+    if(d.ghost) d.ghost.remove();
+    const mc = hitMascot(e.clientX, e.clientY);
+    if(mc) feedBubble(mc, d.m);
+  }
+});
+function hitMascot(x, y){
+  return mascots.find(mc=>{
+    const r = mc.getBoundingClientRect();
+    const pad = 20;
+    return x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad;
+  });
+}
+function feedBubble(mc, m){
+  kanshanTip('feed', '投喂成功，好感 +2，喂多了还能升级哦～', 700);
+  affection.feeds = (affection.feeds || 0) + 1;
+  if(!affection.fed) affection.fed = [];
+  if(!affection.fed.includes(m.phrase)) affection.fed.push(m.phrase);
+  saveAff();
+  setMood(mc, 'happy', 700);
+  spawnFx(mc, ['💛','✨']);
+  playBoing();
+  if([5, 10, 20].includes(affection.feeds)){
+    kanshanSay(mc, `今天已经投喂了 ${affection.feeds} 个梗，肚皮圆了。`);
+    announce(`看山吃下了第 ${affection.feeds} 个梗`);
+  } else {
+    kanshanSay(mc, `「${m.phrase}」真香，我记下了。`);
+  }
+  addAff(2, '投喂看山');
+}
+
+/* ---------- 梗编年史 ---------- */
+function renderTimeline(){
+  const sc = $('tl-scroll');
+  sc.innerHTML = '';
+  const byYear = {};
+  MEMES.forEach(m=>{
+    const y = memeYear(m);
+    const k = y === null ? '未知' : String(y);
+    (byYear[k] = byYear[k] || []).push(m);
+  });
+  const years = Object.keys(byYear).sort((a, b)=> a === '未知' ? 1 : b === '未知' ? -1 : (+a) - (+b));
+  years.forEach(y=>{
+    const col = document.createElement('div');
+    col.className = 'tl-year';
+    const dot = document.createElement('div'); dot.className = 'tl-dot';
+    const lab = document.createElement('div'); lab.className = 'tl-label';
+    lab.textContent = y === '未知' ? '未考据' : y;
+    const memes = document.createElement('div'); memes.className = 'tl-memes';
+    byYear[y].forEach(m=>{
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'tl-meme';
+      chip.textContent = m.phrase;
+      chip.addEventListener('click', ()=>{
+        closeModal('timeline-open');
+        addToHistory(m);
+        body.classList.add('detail-open');
+        fillCard(m);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      });
+      memes.appendChild(chip);
+    });
+    col.append(dot, lab, memes);
+    sc.appendChild(col);
+  });
+}
+$('timeline-btn').addEventListener('click', ()=>{
+  kanshanTip('timeline', '年表按年份排的，上下左右滚动就能看完全部～');
+  renderTimeline();
+  openModal('timeline-open');
+});
+$('timeline-close').addEventListener('click', ()=> closeModal('timeline-open'));
+$('timeline-mask').addEventListener('click', e=>{ if(e.target.id === 'timeline-mask') closeModal('timeline-open'); });
+
+/* ---------- 深夜 / 深色模式 ---------- */
+const darkBtn = $('dark-btn');
+function syncDarkBtn(){
+  if(!darkBtn) return;
+  const dark = body.classList.contains('dark');
+  const ico = darkBtn.querySelector('.nav-ico');
+  const txt = darkBtn.querySelector('.nav-txt');
+  if(ico) ico.textContent = dark ? '☀️' : '🌙';
+  if(txt) txt.textContent = dark ? '白昼' : '深夜';
+  if(!ico || !txt) darkBtn.textContent = dark ? '☀️' : '🌙';
+}
+if(darkBtn){
+  darkBtn.addEventListener('click', ()=>{
+    body.classList.toggle('dark');
+    localStorage.setItem('kanshan-dark', body.classList.contains('dark') ? '1' : '0');
+    syncDarkBtn();
+  });
+}
+
+/* ---------- 官方四视图：拖拽放手就转身 ---------- */
+const POSES = [
+  'assets/kanshan-cutout.webp',
+  'assets/poses/pose-1.png',
+  'assets/poses/pose-2.png',
+  'assets/poses/pose-3.png',
+  'assets/poses/pose-4.png'
+];
+function nextPose(mc){
+  const img = mc && mc.querySelector('img');
+  if(!img) return;
+  mc._pose = ((mc._pose || 0) + 1) % POSES.length;
+  img.style.transition = 'opacity .25s ease';
+  img.style.opacity = '0';
+  setTimeout(()=>{
+    img.src = POSES[mc._pose];
+    img.style.opacity = '1';
+    setTimeout(()=>{ img.style.opacity = ''; img.style.transition = ''; }, 300);
+  }, 220);
+  spawnFx(mc, ['🌀']);
+}
+
+/* ---------- 分享接力 ---------- */
+function relayFor(m){
+  const r = (affection.relay || []).find(x => x.phrase === m.phrase);
+  return r ? r.line : '';
+}
+function renderRelayChain(m){
+  const ul = $('relay-chain');
+  if(!ul) return;
+  const items = (affection.relay || []).filter(x => !m || x.phrase === m.phrase).slice(0, 6);
+  ul.innerHTML = '';
+  if(!items.length){
+    const li = document.createElement('li');
+    li.textContent = '还没有人接龙，来当第一个';
+    ul.appendChild(li);
+    return;
+  }
+  items.forEach(it=>{
+    const li = document.createElement('li');
+    const b = document.createElement('b');
+    b.textContent = '「' + it.phrase + '」';
+    const t = document.createElement('time');
+    t.textContent = fmtTime(it.time);
+    li.appendChild(b);
+    li.appendChild(document.createTextNode(' ' + it.line));
+    li.appendChild(t);
+    ul.appendChild(li);
+  });
+}
 
 // boot
 queue = drawBatch(POOL_SIZE);
 render();
 updateHistoryCount();
 $('tab-fav-count').textContent = favs.length;
+initDaily();
+renderChallenge();
+updateLevelBadge();
+const darkPref = localStorage.getItem('kanshan-dark');
+const nowH = new Date().getHours();
+const isNight = nowH >= 23 || nowH < 5;
+if(isNight){
+  body.classList.add('night');
+  if(darkPref === null || darkPref === '1') body.classList.add('dark');
+} else if(darkPref === '1'){
+  body.classList.add('dark');
+}
+syncDarkBtn();
+if(isNight){
+  setTimeout(()=>{
+    const mc = document.querySelector('.mascot-left');
+    if(mc) kanshanSay(mc, '深夜了，看完这个梗就去睡。🌙');
+  }, 3000);
+}
+
+/* ---------- 匿名用户 & 全网统计（方案A） ---------- */
+const UID_KEY = 'kanshan-uid';
+let uid = localStorage.getItem(UID_KEY);
+if(!uid){
+  uid = (crypto.randomUUID ? crypto.randomUUID() : 'u-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+  try{ localStorage.setItem(UID_KEY, uid); }catch(e){}
+}
+function postUser(path, body){
+  return fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+    .then(r=>r.json()).catch(()=>null);
+}
+function trackView(phrase){
+  postUser('/api/user/view', {uid, phrase});
+}
+function applyGlobalStats(stats){
+  const el = $('global-stats');
+  if(el && stats){
+    el.textContent = '全网已有 ' + stats.users + ' 位知友 · 共戳破 ' + stats.views + ' 次 · 今日 ' + stats.today + ' 人活跃';
+  }
+}
+async function syncUser(){
+  const res = await postUser('/api/user/hello', {uid});
+  if(!res || !res.ok) return;
+  applyGlobalStats(res.stats);
+  if(res.history && res.history.length){
+    const known = new Set(history.map(h=>h.phrase));
+    let changed = false;
+    res.history.forEach(item=>{
+      if(!known.has(item.phrase)){
+        history.push({phrase: item.phrase, time: item.ts * 1000});
+        known.add(item.phrase);
+        changed = true;
+      }
+    });
+    if(changed){
+      history.sort((a,b)=> b.time - a.time);
+      if(history.length > 50) history.length = 50;
+      saveHistory();
+      render();
+    }
+  }
+}
+syncUser();
+
+/* ---------- 看山引导提示（每类只提示一次） ---------- */
+const TIP_KEY = 'kanshan-tips';
+let seenTips = [];
+try{ seenTips = JSON.parse(localStorage.getItem(TIP_KEY)) || []; }catch(e){ seenTips = []; }
+function markTip(id){
+  if(seenTips.includes(id)) return;
+  seenTips.push(id);
+  try{ localStorage.setItem(TIP_KEY, JSON.stringify(seenTips)); }catch(e){}
+}
+function kanshanTip(id, text, delay){
+  if(seenTips.includes(id)) return;
+  markTip(id);
+  setTimeout(()=>{
+    const mc = document.querySelector('.mascot-left');
+    if(mc) kanshanSay(mc, text);
+  }, delay || 600);
+}
+// 新访客欢迎语
+if(!localStorage.getItem('kanshan-welcome')){
+  try{ localStorage.setItem('kanshan-welcome', '1'); }catch(e){}
+  setTimeout(()=>{
+    const mc = document.querySelector('.mascot-left');
+    if(mc) kanshanSay(mc, '你好呀，我是看山！这页都是知乎老梗，点开气泡就能看。');
+  }, 1500);
+  setTimeout(()=>{
+    const mc = document.querySelector('.mascot-left');
+    if(mc) kanshanSay(mc, '悄悄告诉你：把我拖起来松手，我会转个圈；头像连点 5 次还有惊喜～');
+  }, 5200);
+}
 </script>
 </body>
 </html>
